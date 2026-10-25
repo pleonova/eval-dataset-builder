@@ -174,7 +174,7 @@ Gray band is the expert range; the dashed line is the AI ceiling ({result.detail
 
 
 def render() -> None:
-    page_header("Why do experts disagree?",
+    page_header("Where do experts disagree?",
                 "The numbers behind the Overview: how much experts agree, which levels they mix up, "
                 "and how the AI compares to each expert.")
     render_note(get_result())
