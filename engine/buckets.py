@@ -216,33 +216,37 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
 
 
 def trusted_range(df: pd.DataFrame) -> ModuleResult:
-    """Trusted share with a 95% range grouped by passage, today and with more passages rated."""
+    """Trusted share with a 95% range grouped by item, today and with more items rated.
+
+    No expert consensus labels are left out: they may be truly subjective, so no answer is right or wrong
+    and they shouldn't count against the share. Re-rate labels stay in, since they still have a right answer."""
     table = bucket_table(df)
-    if table.empty:
+    scored = table[table["bucket"] != "No expert consensus"]
+    if scored.empty:
         return ModuleResult("trusted_range", None, "na", "No expert ratings yet.")
 
-    per_passage = (table["bucket"] == "Trusted").groupby(table["item_id"]).mean()
-    share, sd, n = float(per_passage.mean()), float(per_passage.std(ddof=1)), len(per_passage)
+    # Items keep different numbers of scored labels, so use a ratio with a range grouped by item
+    per_item = (scored["bucket"] == "Trusted").groupby(scored["item_id"]).agg(["sum", "size"])
+    n = len(per_item)
+    share = float(per_item["sum"].sum() / per_item["size"].sum())
+    resid = per_item["sum"] - share * per_item["size"]
+    sd = float(np.sqrt((resid ** 2).sum() / (n - 1)) / per_item["size"].mean()) if n > 1 else 0.0
     rows = []
     for extra in [0] + EXTRA_PASSAGES:
         margin = float(1.96 * sd / np.sqrt(n + extra))
         rows.append({
             "label": "Today" if extra == 0 else f"+{extra} items",
-            "passages": n + extra,
+            "items": n + extra,
             "low": max(0.0, share - margin),
             "high": min(1.0, share + margin),
             "margin": margin,
         })
-    today, last = rows[0], rows[-1]
+    today = rows[0]
     unsafe = 1 - today["low"]
     warning = f"so up to about 1 in {round(1 / unsafe)} labels might not be correct." if unsafe else ""
-    trusted = int((table["bucket"] == "Trusted").sum())
-    reading = (f"{share:.0%} of the whole dataset is Trusted ({trusted} of all {len(table)} labels). "
-               f"Across the whole dataset, the true share could be anywhere from "
-               f"{today['low']:.0%} to {today['high']:.0%}" + (f", {warning} " if warning else ". ")
-               + f"Two things narrow it: rating more items (another {EXTRA_PASSAGES[-1]} narrows it to "
-               f"{last['low']:.0%} to {last['high']:.0%}), or more agreement between experts on each item, "
-               f"for example from clearer rating instructions.")
+    reading = (f"{share:.0%} of labels are Trusted, not counting No expert consensus, which may be truly subjective. "
+               f"The true share could be as low as {today['low']:.0%}" + (f", {warning} " if warning else ". ")
+               + "Rating more items or clearer rating instructions narrows it.")
     return ModuleResult(
         name="trusted_range",
         value=share,
@@ -250,6 +254,7 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
         reading=reading,
         details={"rows": rows, "share": share, "unsafe": unsafe, "warning": warning,
                  "help": ("A 95% range for the Trusted share across the whole dataset: the true share most likely "
-                          "falls inside it. It is worked out item by item, so it narrows as more items are rated "
+                          "falls inside it. No expert consensus labels are left out, since they may be truly "
+                          "subjective. It is worked out item by item, so it narrows as more items are rated "
                           "or as experts agree more often on each item.")},
     )

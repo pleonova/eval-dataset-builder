@@ -4,7 +4,7 @@ import streamlit as st
 
 from result import ModuleResult
 
-RED = "#dc2626"
+RED = "#c0504d"
 
 
 def render_card(result: ModuleResult) -> None:

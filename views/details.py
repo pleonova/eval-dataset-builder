@@ -3,12 +3,11 @@ import streamlit as st
 
 from config import BUCKETS
 from result import ModuleResult
-from views import render_note
+from views import RED, render_note
 from views.overview import BLUE, BUCKET_COLORS, dot
 
 FILTER_KEY = "details_bucket"
 FILTERS = ["All", *BUCKETS]
-RED = "#dc2626"
 
 # Placeholder content: example values from the Analyst view wireframe in the build plan.
 HELP = {

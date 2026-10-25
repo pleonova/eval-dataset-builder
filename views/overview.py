@@ -38,9 +38,7 @@ def filter_css() -> str:
 
 CSS = f"""
 <style>
-.eeb-banner {{ background: {BLUE}14; border-left: 3px solid {BLUE}; border-radius: 6px; padding: 10px 14px;
-  font-size: 0.9rem; margin-bottom: 1.25rem; }}
-.eeb-verdict {{ border: 2px solid {RED}; background: {RED}0a; border-radius: 8px; padding: 14px 16px;
+.eeb-verdict {{ border: 1px solid {RED}; background: {RED}0a; border-radius: 8px; padding: 14px 16px;
   margin-bottom: 1.5rem; }}
 .eeb-verdict .eeb-kicker {{ color: {RED}; }}
 .eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
@@ -61,7 +59,8 @@ CSS = f"""
 .eeb-tip .tip b {{ display: block; margin-bottom: 4px; }}
 .eeb-tip:hover .tip, .eeb-tip:focus .tip, .eeb-tip:focus-within .tip {{ display: block; }}
 .eeb-page-title {{ font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25;
-  margin: 0.25rem 0 1rem; }}
+  margin: 0.25rem 0 0.35rem; }}
+.eeb-tagline {{ font-size: 1rem; color: #6b7280; line-height: 1.45; margin-bottom: 1.25rem; }}
 .eeb-head {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .eeb-head .title {{ font-size: 1.1rem; font-weight: 600; }}
 .eeb-head .hint {{ font-size: 0.75rem; color: #6b7280; }}
@@ -74,13 +73,12 @@ CSS = f"""
 .eeb-card .sub {{ font-size: 0.8rem; color: #6b7280; margin: -4px 0 12px; }}
 .eeb-card .row {{ font-size: 0.9rem; margin: 4px 0; }}
 .eeb-card .note {{ font-size: 0.8rem; color: #6b7280; margin-top: 8px; }}
-.eeb-card .note .warn {{ color: {RED}; }}
 .eeb-card.soon {{ border-style: dashed; filter: grayscale(1); opacity: 0.6; }}
 .eeb-card .soon-tag {{ font-size: 0.7rem; font-weight: 600; border: 1px solid #9ca3af; border-radius: 10px;
   padding: 1px 8px; margin-left: 8px; color: #6b7280; text-transform: none; letter-spacing: 0; }}
 .eeb-card .before {{ font-size: 0.85rem; margin: 10px 0 0; }}
 .eeb-card .before ul {{ margin: 4px 0 0; padding-left: 1.2rem; }}
-.eeb-range {{ display: grid; grid-template-columns: 110px 1fr 90px; align-items: center; gap: 12px;
+.eeb-range {{ display: grid; grid-template-columns: 90px 1fr 130px; align-items: center; gap: 12px;
   font-size: 0.85rem; margin: 6px 0; }}
 .eeb-range .track {{ position: relative; height: 12px; }}
 .eeb-range .span {{ position: absolute; top: 0; height: 12px; border-radius: 6px; background: {BLUE}; }}
@@ -89,9 +87,6 @@ CSS = f"""
 .eeb-range .pm {{ color: #6b7280; }}
 .eeb-range.last .name {{ font-weight: 600; }}
 .eeb-range.last .pm {{ color: {BLUE}; font-weight: 600; }}
-.eeb-range.today .name, .eeb-range.today .pm {{ color: {RED}; font-weight: 600; }}
-.eeb-range.today .span {{ background: {RED}; opacity: 0.6 !important; }}
-.eeb-range.today .point {{ background: {RED}; }}
 [class*="st-key-overview_bar"] [data-testid="stElementToolbar"] {{ display: none; }}
 .st-key-overview_mix {{ border-color: #d1d5db; border-radius: 8px; }}
 .eeb-crit {{ display: grid; grid-template-columns: 170px 1fr 200px; align-items: center; gap: 12px;
@@ -101,7 +96,6 @@ CSS = f"""
 .eeb-crit.flagged .name {{ font-weight: 600; }}
 .eeb-crit.flagged .fill {{ background: {RED}; }}
 .eeb-crit .count {{ color: #6b7280; white-space: nowrap; }}
-.eeb-crit .tag {{ color: {RED}; font-weight: 600; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
@@ -223,11 +217,10 @@ def rubric_card(result: ModuleResult) -> None:
     rows = []
     for r in result.details.get("rows", []):
         flagged = " flagged" if r["flagged"] else ""
-        tag = '<span class="tag"> · rubric unclear</span>' if r["flagged"] else ""
         rows.append(f"""
 <div class="eeb-crit{flagged}"><span class="name">{r['criterion'].replace('_', ' ').capitalize()}</span>
   <div class="track"><div class="fill" style="width:{(1 - r['share']) * 100:.0f}%"></div></div>
-  <span class="count">{r['items'] - r['split']} of {r['items']} agree{tag}</span></div>""")
+  <span class="count">{r['items'] - r['split']} of {r['items']} agree</span></div>""")
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">Is the rubric clear?</div>
 <div class="title">{result.details.get("headline", "")}</div>
@@ -260,23 +253,21 @@ def certainty_card(result: ModuleResult) -> None:
     lines = []
     for i, r in enumerate(rows):
         opacity = 0.25 + 0.5 * i / max(1, len(rows) - 1)
-        last = " today" if i == 0 else " last" if i == len(rows) - 1 else ""
+        last = " last" if i == len(rows) - 1 else ""
         lines.append(f"""
 <div class="eeb-range{last}"><span class="name">{r['label']}</span>
   <div class="track"><div class="span" style="left:{pos(r['low']):.1f}%;width:{pos(r['high']) - pos(r['low']):.1f}%;opacity:{opacity:.2f}"></div>
   <div class="point" style="left:{pos(share):.1f}%"></div></div>
-  <span class="pm">{r['low']:.0%} to {r['high']:.0%}</span></div>""")
-    warning = result.details.get("warning")
+  <span class="pm">± {r['margin'] * 100:.0f} ({r['low']:.0%} to {r['high']:.0%})</span></div>""")
     wide = "A wide bar"
     if result.details.get("help"):
         wide = help_term(wide, "What the range means", result.details["help"])
-    reading = result.reading.replace(warning, f'<span class="warn">{warning}</span>') if warning else result.reading
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">How sure are we?</div>
 <div class="title">More ratings mean steadier, more trustworthy results</div>
 <div class="sub">{wide} means the share of labels you can trust could still shift between checks.</div>
 {''.join(lines)}
-<div class="note">{reading}</div></div>""", unsafe_allow_html=True)
+<div class="note">{result.reading}</div></div>""", unsafe_allow_html=True)
 
 
 def spread(labels: str) -> str:
@@ -313,9 +304,8 @@ def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()
 
-    st.markdown('<div class="eeb-page-title">Can we tune the AI on these expert labels?</div>',
-                unsafe_allow_html=True)
-    st.markdown('<div class="eeb-banner">AI is no better than the humans it is checked against. '
+    st.markdown('<div class="eeb-page-title">Can we tune the AI on these expert labels?</div>'
+                '<div class="eeb-tagline">AI is no better than the humans it is checked against. '
                 'First check if experts truly disagree or need more ratings.</div>',
                 unsafe_allow_html=True)
     verdict_card(results["verdict"])
