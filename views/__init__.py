@@ -14,6 +14,15 @@ def render_card(result: ModuleResult) -> None:
         st.write(result.reading)
 
 
+def page_header(title: str, tagline: str) -> None:
+    """Page title and gray tagline, styled like the Overview heading."""
+    st.markdown(f"""
+<div style="font-size:1.6rem; font-weight:700; letter-spacing:-0.02em; line-height:1.25; margin:0.25rem 0 0.35rem">
+  {title}</div>
+<div style="font-size:1rem; color:#6b7280; line-height:1.45; margin-bottom:1.25rem">{tagline}</div>""",
+                unsafe_allow_html=True)
+
+
 def render_note(result: ModuleResult) -> None:
     """Red callout bar, styled like the Rubric banner, for stub and draft notes."""
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", result.reading)

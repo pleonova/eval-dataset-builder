@@ -7,7 +7,7 @@ from config import ALPHA_FAIR, ALPHA_GOOD, CRITERIA, LEVELS
 from engine.statistics import alpha_by_criterion, level_confusion, rater_kappas
 from engine.load import load_ratings
 from result import ModuleResult
-from views import render_note
+from views import page_header, render_note
 from views.overview import BLUE
 
 SHORT = {level: level.split("_")[0] for level in LEVELS}
@@ -17,7 +17,8 @@ CSS = f"""
 <style>
 .eeb-kicker {{ font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
   color: {BLUE}; margin-bottom: 4px; }}
-.eeb-card {{ border: 1px solid #d1d5db; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
+/* Dashed gray: these cards show what the page could hold, not finished results */
+.eeb-card {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
 .eeb-card .title {{ font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }}
 .eeb-card .sub {{ font-size: 0.8rem; color: #6b7280; margin: -4px 0 12px; }}
 .eeb-card .note {{ font-size: 0.8rem; color: #6b7280; margin-top: 8px; }}
@@ -36,6 +37,7 @@ CSS = f"""
   border-radius: 50%; background: #6b7280; }}
 .eeb-strip.focus .name, .eeb-strip.focus .num.main {{ font-weight: 600; }}
 .eeb-strip.focus .span, .eeb-strip.focus .point {{ background: {BLUE}; }}
+.st-key-statistics_confusion {{ border: 1px dashed #9ca3af; border-radius: 8px; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 </style>
 """
@@ -90,7 +92,7 @@ def alpha_card(result: ModuleResult) -> None:
   <span class="num">{r['trusted_share']:.0%}</span></div>""")
     lines.append(axis_row(pos, [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], 3))
     st.markdown(f"""
-<div class="eeb-card"><div class="eeb-kicker">Alpha by criterion</div>
+<div class="eeb-card"><div class="eeb-kicker">Do experts agree on each criterion?</div>
 <div class="title">{result.details['headline']}</div>
 <div class="sub">First-try agreement among round-1 experts. Dashed lines mark {ALPHA_FAIR} and {ALPHA_GOOD}.
 Ranges come from resampling whole passages.</div>
@@ -129,7 +131,7 @@ def confusion_card(result: ModuleResult) -> None:
         return
     with st.container(border=True, key="statistics_confusion"):
         st.markdown(f"""
-<div class="eeb-kicker">Confusion between levels</div>
+<div class="eeb-kicker">Which levels get mixed up?</div>
 <div class="title" style="font-size:1.1rem;font-weight:600">{result.details['headline']}</div>
 <div class="sub" style="font-size:0.8rem;color:#6b7280;margin:4px 0 8px">Every pair of round-1 experts on the
 same passage. The gray diagonal is agreement; blue cells are the levels they mix up.</div>""",
@@ -163,7 +165,7 @@ def kappa_card(result: ModuleResult) -> None:
     ticks = [round(lo + i * 0.05, 2) for i in range(int(round((hi - lo) / 0.05)) + 1)]
     lines.append(axis_row(pos, ticks, 1, "{:.2f}"))
     st.markdown(f"""
-<div class="eeb-card"><div class="eeb-kicker">Per-rater kappa</div>
+<div class="eeb-card"><div class="eeb-kicker">How does each rater compare?</div>
 <div class="title">{result.details['headline']}</div>
 <div class="sub">Each expert against the majority of the other three; the AI judge against expert consensus.
 Gray band is the expert range; the dashed line is the AI ceiling ({result.details['ceiling']:.2f}).</div>
@@ -172,6 +174,9 @@ Gray band is the expert range; the dashed line is the AI ceiling ({result.detail
 
 
 def render() -> None:
+    page_header("Why do experts disagree?",
+                "The numbers behind the Overview: how much experts agree, which levels they mix up, "
+                "and how the AI compares to each expert.")
     render_note(get_result())
     st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()

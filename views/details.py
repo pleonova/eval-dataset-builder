@@ -3,7 +3,7 @@ import streamlit as st
 
 from config import BUCKETS
 from result import ModuleResult
-from views import RED, render_note
+from views import RED, page_header, render_note
 from views.overview import BLUE, BUCKET_COLORS, dot
 
 FILTER_KEY = "details_bucket"
@@ -82,7 +82,7 @@ CSS = f"""
   border: 1px solid #111827; }}
 .eeb-badge.good {{ background: #11182714; }}
 .eeb-badge.fair {{ border-style: dashed; }}
-.eeb-key {{ font-size: 0.75rem; color: #6b7280; margin: 8px 0 1.25rem; }}
+.eeb-key {{ font-size: 0.75rem; color: #6b7280; margin-top: 8px; }}
 .eeb-help {{ position: relative; display: inline-flex; align-items: center; justify-content: center;
   width: 16px; height: 16px; border-radius: 50%; border: 1px solid #9ca3af; color: #6b7280;
   font-size: 0.68rem; font-weight: 600; cursor: pointer; flex: none; outline: none; text-transform: none;
@@ -95,11 +95,12 @@ CSS = f"""
 .eeb-help:hover, .eeb-help:focus {{ border-color: {BLUE}; color: {BLUE}; background: {BLUE}14; }}
 .eeb-help:hover .tip, .eeb-help:focus .tip, .eeb-help:focus-within .tip {{ display: block; }}
 .eeb-metric:last-child .eeb-help .tip {{ left: auto; right: -8px; transform: none; }}
-.eeb-next {{ border: 1px solid {BLUE}; background: {BLUE}0f; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
+/* Dashed gray: these cards show what the page could hold, not finished results */
+.eeb-next {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
 .eeb-next .title, .eeb-card .title {{ font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }}
 .eeb-next .step {{ display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; margin: 6px 0; }}
 .eeb-next .act {{ color: {BLUE}; font-weight: 600; white-space: nowrap; }}
-.eeb-card {{ border: 1px solid #d1d5db; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
+.eeb-card {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; margin: 1rem 0; }}
 .eeb-card .row {{ font-size: 0.9rem; margin: 4px 0; }}
 .eeb-card .note {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 8px; }}
 .eeb-items {{ width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }}
@@ -109,6 +110,7 @@ CSS = f"""
 .eeb-items .quiet {{ color: #6b7280; }}
 .eeb-items .miss {{ color: {RED}; font-weight: 600; }}
 .eeb-dot {{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }}
+.st-key-details_items {{ border: 1px dashed #9ca3af; border-radius: 8px; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
@@ -137,8 +139,10 @@ def metric_tiles() -> None:
   <div class="lines"><div class="line">{m['lines'][0]}</div><div class="line">{m['lines'][1]}</div></div></div>"""
                     for m in METRICS)
     st.markdown(f"""
-<div class="eeb-kicker">Headline numbers</div><div class="eeb-metrics">{tiles}</div>
-<div class="eeb-key">✓ Good · ~ Fair · ✗ Weak · Click a ? to see what a number means</div>""",
+<div class="eeb-card"><div class="eeb-kicker">How do the numbers look?</div>
+<div class="title">Experts agree fairly, and the AI matches them where they agree</div>
+<div class="eeb-metrics">{tiles}</div>
+<div class="eeb-key">✓ Good · ~ Fair · ✗ Weak · Click a ? to see what a number means</div></div>""",
                 unsafe_allow_html=True)
 
 
@@ -160,7 +164,10 @@ def stand_in_panel() -> None:
 
 
 def item_table() -> None:
-    st.markdown('<div class="eeb-kicker">Items</div>', unsafe_allow_html=True)
+    st.markdown(f"""
+<div class="eeb-kicker">Which items need a closer look?</div>
+<div class="title" style="font-size:1.1rem;font-weight:600;margin-bottom:8px">{COUNTS['Re-rate']} Re-rate and
+{COUNTS['No expert consensus']} No expert consensus items to check</div>""", unsafe_allow_html=True)
     st.session_state.setdefault(FILTER_KEY, "All")
     choice = st.segmented_control("Bucket", FILTERS, key=FILTER_KEY, label_visibility="collapsed",
                                   format_func=lambda f: f"{f} {COUNTS[f]}") or "All"
@@ -181,10 +188,14 @@ def item_table() -> None:
 
 def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+    page_header("Which items need attention?",
+                "Item by item, for analysts: the headline numbers, fixes in order, and every item "
+                "with its bucket and how the AI did.")
     render_note(get_result())
     metric_tiles()
     next_steps()
     stand_in_panel()
-    item_table()
+    with st.container(border=True, key="details_items"):
+        item_table()
     st.markdown('<div class="eeb-simulated">Example values, shown as a placeholder for this page.</div>',
                 unsafe_allow_html=True)
