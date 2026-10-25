@@ -84,6 +84,7 @@ def judge_vs_experts(df: pd.DataFrame) -> ModuleResult:
             "expert_range": (low, high),
             "ceiling": ceiling,
             "n_items": len(judged),
+            "n_exact": int((judged["judge"] == judged["label"]).sum()),
             "n_no_majority": int(merged["judge"].isna().sum()),
             "interval": "Range coming next.",
         },
@@ -143,4 +144,26 @@ def subjective_items(df: pd.DataFrame) -> ModuleResult:
         status="na",
         reading=reading,
         details={"items": items},
+    )
+
+
+def stand_in(df: pd.DataFrame) -> ModuleResult:
+    """Plain lines for the Decision page, one per bucket the AI is judged on."""
+    judge = judge_vs_experts(df)
+    if judge.value is None:
+        return ModuleResult("stand_in", None, "na", judge.reading)
+    n, exact = judge.details["n_items"], judge.details["n_exact"]
+    answer = "yes" if judge.status == "good" else "not yet"
+    lines = [
+        {"bucket": "Trusted", "text": f"Trusted labels: {answer}, it matches experts on {exact} of {n}"},
+        {"bucket": "No expert consensus",
+         "text": "No expert consensus: it acts like one expert, so keep a person reviewing"},
+    ]
+    consistency = self_consistency(df)
+    return ModuleResult(
+        name="stand_in",
+        value=judge.status == "good",
+        status=judge.status,
+        reading=lines[0]["text"],
+        details={"lines": lines, "note": consistency.reading, "note_status": consistency.status},
     )

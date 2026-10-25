@@ -1,7 +1,8 @@
 """Sort each item and criterion into Trusted, Re-rate, or No expert consensus."""
 import pandas as pd
 
-from config import BUCKETS, TRUSTED_FAIR, TRUSTED_GOOD
+from config import (BUCKETS, COST_PER_HOUR, MINUTES_PER_LABEL, RERATE_EXPERTS, ROUND2_FLAG_SHARE,
+                    TRUSTED_FAIR, TRUSTED_GOOD)
 from engine.consensus import majority
 from engine.load import is_expert
 from result import ModuleResult
@@ -39,6 +40,7 @@ def bucket_table(df: pd.DataFrame) -> pd.DataFrame:
             "label": label,
             "round1": ", ".join(sorted(round1)),
             "round2": ", ".join(sorted(round2)),
+            "split": pd.Series(round1).value_counts().iloc[0] < 3,
         })
     return pd.DataFrame(rows)
 
@@ -71,4 +73,70 @@ def buckets(df: pd.DataFrame) -> ModuleResult:
         status=bucket_status(shares["Trusted"]),
         reading=reading,
         details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table},
+    )
+
+
+def round2_flag(df: pd.DataFrame) -> ModuleResult:
+    """Flag criteria where round 1 split on a large share of items, even if round 2 fixed most."""
+    table = bucket_table(df)
+    if table.empty:
+        return ModuleResult("round2_flag", None, "na", "No expert ratings yet.")
+
+    split = table.groupby("criterion")["split"].mean()
+    trusted = table.assign(t=table["bucket"] == "Trusted").groupby("criterion")["t"].mean()
+    flagged = split[split >= ROUND2_FLAG_SHARE].sort_values(ascending=False)
+    if flagged.empty:
+        reading = f"No criterion needed a second expert round on more than {ROUND2_FLAG_SHARE:.0%} of items."
+    else:
+        lines = []
+        for criterion, share in flagged.items():
+            name = criterion.replace("_", " ").capitalize()
+            usable = "are usable, but" if trusted[criterion] >= TRUSTED_FAIR else "are not usable yet, and"
+            lines.append(f"{name} labels {usable} 1 in {round(1 / share)} needed a second expert round.")
+        lines.append("The rubric wording is the likely cause. See Pre-check.")
+        reading = " ".join(lines)
+    return ModuleResult(
+        name="round2_flag",
+        value=split.to_dict(),
+        status="weak" if len(flagged) else "good",
+        reading=reading,
+        details={"flagged": list(flagged.index), "threshold": ROUND2_FLAG_SHARE},
+    )
+
+
+def verdict(df: pd.DataFrame) -> ModuleResult:
+    """One recommendation for the Decision page: what to do next and what it costs."""
+    result = buckets(df)
+    if result.value is None:
+        return result
+    counts = result.details["counts"]
+    flagged = round2_flag(df).details["flagged"]
+    trusted, rerate = counts["Trusted"], counts["Re-rate"]
+
+    if rerate:
+        hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
+        action = f"Re-rate {rerate} labels"
+        cost = f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}"
+        reading = (f"Experts split on these and nobody has rechecked them. "
+                   f"Add {RERATE_EXPERTS} new experts on each.")
+        status = "fair"
+    elif flagged:
+        name = flagged[0].replace("_", " ")
+        action, cost = f"Clarify the {name} rubric", ""
+        reading = f"Experts often split on {name} before a second round settled it."
+        status = "fair"
+    elif result.status == "good":
+        action, cost = "Ready to use", ""
+        reading = f"Experts agree on {trusted} labels, so the AI can be checked against them."
+        status = "good"
+    else:
+        action, cost = "Need more ratings", ""
+        reading = "Too few labels are Trusted to check the AI against yet."
+        status = "weak"
+    return ModuleResult(
+        name="verdict",
+        value=action,
+        status=status,
+        reading=reading,
+        details={"action": action, "cost": cost, "counts": counts, "total": sum(counts.values())},
     )

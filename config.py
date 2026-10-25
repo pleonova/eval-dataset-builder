@@ -15,3 +15,12 @@ BUCKETS = ["Trusted", "Re-rate", "No expert consensus"]
 # Share of items where all 3 judge runs agree: good >= 0.90, fair 0.75 to 0.90, weak < 0.75 (judgment call)
 SELF_CONSISTENCY_GOOD = 0.90
 SELF_CONSISTENCY_FAIR = 0.75
+
+# Flag a criterion when round 1 split on at least this share of its items, so it needed a second
+# expert round. Judgment call: set to catch the confusing criterion, not the subjective slice.
+ROUND2_FLAG_SHARE = 0.45
+
+# Cost of a re-rate round (example values): new experts per split label, minutes per label, $ per expert hour
+RERATE_EXPERTS = 2
+MINUTES_PER_LABEL = 6
+COST_PER_HOUR = 60

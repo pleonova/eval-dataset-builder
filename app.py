@@ -2,7 +2,7 @@ import streamlit as st
 
 from views import analyst, cost, decision, precheck
 
-st.set_page_config(page_title="Expert Eval Builder", layout="wide")
+st.set_page_config(page_title="Expert Eval Builder", layout="centered")
 st.title("Expert Eval Builder")
 
 tab_decision, tab_precheck, tab_analyst, tab_cost = st.tabs(
