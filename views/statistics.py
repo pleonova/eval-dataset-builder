@@ -37,7 +37,7 @@ CSS = f"""
   border-radius: 50%; background: #6b7280; }}
 .eeb-strip.focus .name, .eeb-strip.focus .num.main {{ font-weight: 600; }}
 .eeb-strip.focus .span, .eeb-strip.focus .point {{ background: {BLUE}; }}
-.st-key-statistics_confusion {{ border: 1px dashed #9ca3af; border-radius: 8px; }}
+.st-key-statistics_confusion {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 </style>
 """

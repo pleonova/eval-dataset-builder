@@ -3,7 +3,7 @@ import streamlit as st
 from config import ALPHA_FAIR, RUBRIC_MAX_FLIP
 from rubric.analyze import rubric
 from result import ModuleResult
-from views import render_card
+from views import page_header, render_card
 from views.overview import BLUE
 
 STEPS = ["AI dry run", "Expert pilot", "Rate at scale"]
@@ -111,6 +111,9 @@ def ai_answers(result: ModuleResult) -> None:
 
 def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+    page_header("Is the rubric clear enough to send to experts?",
+                "Before experts rate anything, AI raters from two providers apply the draft rubric. "
+                "Where they flip or disagree, the wording is probably unclear.")
     st.markdown('<div class="eeb-banner">Simulated ratings from AI raters, not experts. '
                 'Used only to spot potentially confusing rubric instructions.</div>', unsafe_allow_html=True)
     steps(active=0)

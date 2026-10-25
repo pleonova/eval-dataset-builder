@@ -110,7 +110,7 @@ CSS = f"""
 .eeb-items .quiet {{ color: #6b7280; }}
 .eeb-items .miss {{ color: {RED}; font-weight: 600; }}
 .eeb-dot {{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }}
-.st-key-details_items {{ border: 1px dashed #9ca3af; border-radius: 8px; }}
+.st-key-details_items {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
@@ -189,7 +189,7 @@ def item_table() -> None:
 def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
     page_header("Which items need attention?",
-                "Item by item, for analysts: the headline numbers, fixes in order, and every item "
+                "Item by item: the headline numbers, fixes in order, and every item "
                 "with its bucket and how the AI did.")
     render_note(get_result())
     metric_tiles()
