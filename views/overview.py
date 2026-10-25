@@ -38,16 +38,21 @@ def filter_css() -> str:
 
 CSS = f"""
 <style>
-.eeb-verdict {{ border: 1px solid {RED}; background: {RED}0a; border-radius: 8px; padding: 14px 16px;
-  margin-bottom: 1.5rem; }}
-.eeb-verdict .eeb-kicker {{ color: {RED}; }}
-.eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
+.eeb-verdict {{ border: 2px solid {BLUE}; border-radius: 8px; padding: 14px 16px; margin-bottom: 1.5rem; }}
+.eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }}
 .eeb-kicker {{ font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
   color: {BLUE}; margin-bottom: 4px; }}
 .eeb-verdict .action {{ font-size: 1.2rem; font-weight: 600; }}
 .eeb-verdict .reason {{ margin-top: 6px; }}
-.eeb-verdict .step + .step {{ margin-top: 14px; }}
-.eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; font-style: italic; margin-top: 8px; }}
+.eeb-verdict .step + .step {{ margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; }}
+.eeb-verdict .num {{ display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  margin-right: 8px; border-radius: 50%; background: {BLUE}; color: white; font-size: 0.8rem; font-weight: 600;
+  vertical-align: 2px; }}
+.eeb-verdict .numbered .reason {{ padding-left: 30px; }}
+.eeb-verdict .cost {{ font-size: 0.8rem; color: #4b5563; background: #f3f4f6; border-radius: 999px;
+  padding: 2px 10px; white-space: nowrap; }}
+.eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; font-style: italic; margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid #e5e7eb; }}
 .eeb-tip {{ position: relative; border-bottom: 1px dotted #9ca3af; cursor: help; outline: none; }}
 .eeb-tip:hover, .eeb-tip:focus {{ border-bottom-color: {BLUE}; }}
 .eeb-tip .tip {{ display: none; position: absolute; top: calc(100% + 6px); left: -8px; width: 280px; z-index: 20;
@@ -135,13 +140,13 @@ def verdict_card(result: ModuleResult) -> None:
         cost = step["cost"]
         if cost and step["cost_help"]:
             cost = help_term(cost, "How the cost is worked out", step["cost_help"], "right")
-        cost = f"<span>{cost}</span>" if cost else ""
-        number = f"{i}. " if numbered else ""
+        cost = f'<span class="cost">{cost}</span>' if cost else ""
+        number = f'<span class="num">{i}</span>' if numbered else ""
         reading = step["reading"]
         if step.get("term"):
             reading = reading.replace(step["term"], help_term(step["term"], "What a rubric fix changes", step["term_help"]))
         blocks.append(f"""
-  <div class="step"><div class="top"><span class="action">{number}{step['action']}</span>{cost}</div>
+  <div class="step{' numbered' if numbered else ''}"><div class="top"><span class="action">{number}{step['action']}</span>{cost}</div>
   <div class="reason">{reading}</div></div>""")
     label = "<b>Risk:</b>"
     if result.details.get("risk_help"):
