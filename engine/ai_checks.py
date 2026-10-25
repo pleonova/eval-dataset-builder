@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.metrics import cohen_kappa_score
 
 from config import LEVELS, SELF_CONSISTENCY_FAIR, SELF_CONSISTENCY_GOOD
-from engine.buckets import bucket_table
+from engine.buckets import bucket_table, buckets, round2_flag, trusted_range
 from engine.consensus import majority
 from engine.load import is_judge, round1_experts
 from result import ModuleResult
@@ -157,6 +157,24 @@ def subjective_items(df: pd.DataFrame) -> ModuleResult:
     )
 
 
+def before_ai(df: pd.DataFrame) -> list[str]:
+    """What to improve before the AI rates new passages, worst first."""
+    steps = []
+    trusted = trusted_range(df)
+    if trusted.value is not None and trusted.details["unsafe"]:
+        low = trusted.details["rows"][0]["low"]
+        steps.append(f"Raise confidence in the labels: across the whole dataset, the Trusted share could be as low "
+                     f"as {low:.0%}, so up to about 1 in {round(1 / trusted.details['unsafe'])} labels might not be correct. "
+                     f"Rate more passages to narrow it.")
+    for name in round2_flag(df).details.get("flagged", []):
+        name = name.replace("_", " ")
+        steps.append(f"Clarify the {name} rubric, then recheck the AI on {name}.")
+    rerate = buckets(df).details.get("counts", {}).get("Re-rate", 0)
+    if rerate:
+        steps.append(f"Settle the {rerate} Re-rate labels with experts, so the AI has more to be checked against.")
+    return steps
+
+
 def stand_in(df: pd.DataFrame) -> ModuleResult:
     """Plain lines for the Overview page, one per bucket the AI is judged on."""
     judge = judge_vs_experts(df)
@@ -193,7 +211,9 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
             "note": consistency.reading,
             "note_status": consistency.status,
             "expert_matches": matches,
-            "headline": ("Yes: use the AI to rate new passages" if judge.status == "good"
-                         else "Not yet: keep experts rating new passages"),
+            "headline": ("Early read: the AI rates as well as an expert" if judge.status == "good"
+                         else "Early read: the AI misses more often than experts do"),
+            "before": before_ai(df),
+            "sub": "The AI rated the same labels as the experts, 3 times each. Its answers are compared with theirs.",
         },
     )

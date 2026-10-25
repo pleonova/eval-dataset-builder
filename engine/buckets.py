@@ -123,31 +123,45 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
     )
 
 
-def verdict(df: pd.DataFrame) -> ModuleResult:
-    """One recommendation for the Overview page: what to do next and what it costs."""
+def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
+    """One recommendation for the Overview page: go or no go on the labels to tune against.
+
+    Re-rate comes first: tuning on Trusted labels alone would lean toward the easier passages. Go only when
+    nothing is left to re-rate and the Trusted share reaches TRUSTED_GOOD.
+    `ai` (from `engine.ai_checks.stand_in`) only adds whether the AI matches experts on Trusted labels."""
     result = buckets(df)
     if result.value is None:
         return result
     counts = result.details["counts"]
     flagged = round2_flag(df).details["flagged"]
-    trusted, rerate = counts["Trusted"], counts["Re-rate"]
+    trusted, rerate, total = counts["Trusted"], counts["Re-rate"], sum(counts.values())
+
+    hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
+    rerate_cost = f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}"
+    no_consensus = counts["No expert consensus"]
+    risk = ""
 
     if rerate:
-        hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
         action = f"Re-rate {rerate} labels"
-        cost = f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}"
+        cost = rerate_cost
         reading = (f"Experts split on these and nobody has rechecked them. "
                    f"Add {RERATE_EXPERTS} new experts on each.")
+        risk = ("Risk: Tuning only on the labels experts agree on, without addressing where they disagree, "
+                "could bias the AI toward easier passages and make it unreliable on harder ones.")
         status = "fair"
+    elif result.value["Trusted"] >= TRUSTED_GOOD:
+        action, cost = f"Tune on the {trusted} Trusted labels", ""
+        reading = ("Experts agree on these, and the AI matches them as well as experts match each other."
+                   if ai is not None and ai.value else "Experts agree on these.")
+        if no_consensus:
+            risk = (f"Risk: on the {no_consensus} No expert consensus labels there is no agreed answer, "
+                    f"so the AI can't be checked there.")
+        status = "good"
     elif flagged:
         name = flagged[0].replace("_", " ")
         action, cost = f"Clarify the {name} rubric", ""
         reading = f"Experts often split on {name} before a second round settled it."
         status = "fair"
-    elif result.status == "good":
-        action, cost = "Ready to use", ""
-        reading = f"Experts agree on {trusted} labels, so the AI can be checked against them."
-        status = "good"
     else:
         action, cost = "Need more ratings", ""
         reading = "Too few labels are Trusted to check the AI against yet."
@@ -157,7 +171,7 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         value=action,
         status=status,
         reading=reading,
-        details={"action": action, "cost": cost, "counts": counts, "total": sum(counts.values())},
+        details={"action": action, "cost": cost, "risk": risk, "counts": counts, "total": total},
     )
 
 
@@ -180,13 +194,17 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
             "margin": margin,
         })
     today, last = rows[0], rows[-1]
-    reading = (f"{share:.0%} of labels are Trusted, and the true share could be anywhere from "
-               f"{today['low']:.0%} to {today['high']:.0%}. Rating {EXTRA_PASSAGES[-1]} more passages "
-               f"narrows that to about ±{last['margin'] * 100:.0f} points.")
+    unsafe = 1 - today["low"]
+    warning = f"so up to about 1 in {round(1 / unsafe)} labels might not be correct." if unsafe else ""
+    trusted = int((table["bucket"] == "Trusted").sum())
+    reading = (f"{share:.0%} of the whole dataset is Trusted: {trusted} of all {len(table)} labels, counting "
+               f"Re-rate and No expert consensus. Across the whole dataset, the true share could be anywhere from "
+               f"{today['low']:.0%} to {today['high']:.0%}" + (f", {warning} " if warning else ". ")
+               + f"Rating {EXTRA_PASSAGES[-1]} more passages narrows that to {last['low']:.0%} to {last['high']:.0%}.")
     return ModuleResult(
         name="trusted_range",
         value=share,
         status="na",
         reading=reading,
-        details={"rows": rows, "share": share},
+        details={"rows": rows, "share": share, "unsafe": unsafe, "warning": warning},
     )

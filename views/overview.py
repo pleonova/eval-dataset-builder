@@ -10,6 +10,7 @@ from engine.ai_checks import stand_in, subjective_items
 from engine.buckets import buckets, round2_flag, trusted_range, verdict
 from engine.load import load_ratings
 from result import ModuleResult
+from views import RED
 
 BLUE = "#2563eb"
 BUCKET_COLORS = {"Trusted": "#4caf50", "Re-rate": "#f59e0b", "No expert consensus": "#ec7fa9"}
@@ -45,6 +46,7 @@ CSS = f"""
   color: {BLUE}; margin-bottom: 4px; }}
 .eeb-verdict .action {{ font-size: 1.2rem; font-weight: 600; }}
 .eeb-verdict .reason {{ margin-top: 6px; }}
+.eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; margin-top: 8px; }}
 .eeb-head {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .eeb-head .title {{ font-size: 1.1rem; font-weight: 600; }}
 .eeb-head .hint {{ font-size: 0.75rem; color: #6b7280; }}
@@ -57,7 +59,13 @@ CSS = f"""
 .eeb-card .sub {{ font-size: 0.8rem; color: #6b7280; margin: -4px 0 12px; }}
 .eeb-card .row {{ font-size: 0.9rem; margin: 4px 0; }}
 .eeb-card .note {{ font-size: 0.8rem; color: #6b7280; margin-top: 8px; }}
-.eeb-range {{ display: grid; grid-template-columns: 110px 1fr 70px; align-items: center; gap: 12px;
+.eeb-card .note .warn {{ color: {RED}; }}
+.eeb-card.soon {{ border-style: dashed; filter: grayscale(1); opacity: 0.6; }}
+.eeb-card .soon-tag {{ font-size: 0.7rem; font-weight: 600; border: 1px solid #9ca3af; border-radius: 10px;
+  padding: 1px 8px; margin-left: 8px; color: #6b7280; text-transform: none; letter-spacing: 0; }}
+.eeb-card .before {{ font-size: 0.85rem; margin: 10px 0 0; }}
+.eeb-card .before ul {{ margin: 4px 0 0; padding-left: 1.2rem; }}
+.eeb-range {{ display: grid; grid-template-columns: 110px 1fr 90px; align-items: center; gap: 12px;
   font-size: 0.85rem; margin: 6px 0; }}
 .eeb-range .track {{ position: relative; height: 12px; }}
 .eeb-range .span {{ position: absolute; top: 0; height: 12px; border-radius: 6px; background: {BLUE}; }}
@@ -85,12 +93,13 @@ CSS = f"""
 @st.cache_data
 def get_results() -> dict[str, ModuleResult]:
     df = load_ratings()
+    ai = stand_in(df)
     return {
-        "verdict": verdict(df),
+        "verdict": verdict(df, ai),
         "buckets": buckets(df),
         "round2": round2_flag(df),
         "range": trusted_range(df),
-        "stand_in": stand_in(df),
+        "stand_in": ai,
         "subjective": subjective_items(df),
     }
 
@@ -101,11 +110,12 @@ def dot(bucket: str) -> str:
 
 def verdict_card(result: ModuleResult) -> None:
     cost = f"<span>{result.details['cost']}</span>" if result.details.get("cost") else ""
+    risk = f'<div class="risk">{result.details["risk"]}</div>' if result.details.get("risk") else ""
     st.markdown(f"""
 <div class="eeb-verdict">
   <div class="eeb-kicker">What to do next</div>
   <div class="top"><span class="action">{result.details.get('action', result.reading)}</span>{cost}</div>
-  <div class="reason">{result.reading}</div>
+  <div class="reason">{result.reading}</div>{risk}
 </div>""", unsafe_allow_html=True)
 
 
@@ -183,9 +193,12 @@ def stand_in_card(result: ModuleResult) -> None:
     rows = "".join(f'<div class="row">{dot(line["bucket"])}<b>{line["label"]}:</b> {line["text"]}</div>'
                    for line in result.details.get("lines", []))
     note = f'<div class="note">{result.details["note"]}</div>' if result.details.get("note") else ""
+    sub = f'<div class="sub">{result.details["sub"]}</div>' if result.details.get("sub") else ""
+    steps = "".join(f"<li>{step}</li>" for step in result.details.get("before", []))
+    before = f'<div class="before"><b>Before running the AI:</b><ul>{steps}</ul></div>' if steps else ""
     st.markdown(f"""
-<div class="eeb-card"><div class="eeb-kicker">Can the AI stand in for experts?</div>
-<div class="title">{result.details.get("headline", "")}</div>{rows or result.reading}{note}</div>
+<div class="eeb-card soon"><div class="eeb-kicker">✨ Can the AI stand in for experts?<span class="soon-tag">Not added yet</span></div>
+<div class="title">{result.details.get("headline", "")}</div>{sub}{rows or result.reading}{note}{before}</div>
 """, unsafe_allow_html=True)
 
 
@@ -205,13 +218,15 @@ def certainty_card(result: ModuleResult) -> None:
 <div class="eeb-range{last}"><span class="name">{r['label']}</span>
   <div class="track"><div class="span" style="left:{pos(r['low']):.1f}%;width:{pos(r['high']) - pos(r['low']):.1f}%;opacity:{opacity:.2f}"></div>
   <div class="point" style="left:{pos(share):.1f}%"></div></div>
-  <span class="pm">±{r['margin'] * 100:.0f} pts</span></div>""")
+  <span class="pm">{r['low']:.0%} to {r['high']:.0%}</span></div>""")
+    warning = result.details.get("warning")
+    reading = result.reading.replace(warning, f'<span class="warn">{warning}</span>') if warning else result.reading
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">How sure are we?</div>
 <div class="title">More ratings mean steadier, more trustworthy results</div>
 <div class="sub">A wide bar means the share of labels you can trust could still shift between checks.</div>
 {''.join(lines)}
-<div class="note">{result.reading}</div></div>""", unsafe_allow_html=True)
+<div class="note">{reading}</div></div>""", unsafe_allow_html=True)
 
 
 def spread(labels: str) -> str:
@@ -253,8 +268,8 @@ def render() -> None:
                 unsafe_allow_html=True)
     verdict_card(results["verdict"])
     where_labels_stand(results)
-    stand_in_card(results["stand_in"])
     rubric_card(results["round2"])
     certainty_card(results["range"])
+    stand_in_card(results["stand_in"])
     st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
                 unsafe_allow_html=True)
