@@ -4,7 +4,7 @@ from views import render_card
 
 def get_result() -> ModuleResult:
     return ModuleResult(
-        name="analyst",
+        name="details",
         value=None,
         status="na",
         reading="Coming next: alpha by criterion with grouped ranges, confusion between levels, per-rater kappa.",

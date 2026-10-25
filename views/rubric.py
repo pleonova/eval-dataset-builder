@@ -1,10 +1,10 @@
 import streamlit as st
 
-from config import ALPHA_FAIR, PRECHECK_MAX_FLIP
-from precheck.analyze import precheck
+from config import ALPHA_FAIR, RUBRIC_MAX_FLIP
+from rubric.analyze import rubric
 from result import ModuleResult
 from views import render_card
-from views.decision import BLUE
+from views.overview import BLUE
 
 STEPS = ["AI dry run", "Expert pilot", "Rate at scale"]
 MODEL_NAMES = {"openai/gpt-oss-120b": "GPT-OSS 120B (OpenAI)", "qwen/qwen3.8-27b": "Qwen 3.8 27B (Alibaba)"}
@@ -49,7 +49,7 @@ CSS = f"""
 
 @st.cache_data
 def get_result() -> ModuleResult:
-    return precheck()
+    return rubric()
 
 
 def steps(active: int = 0) -> None:
@@ -74,7 +74,7 @@ def answer_card(result: ModuleResult) -> None:
 def help_icon(rule: dict) -> str:
     tip = (f"Agreement across AI runs (alpha): {rule['alpha']:.2f}, clear needs {ALPHA_FAIR:.2f} or higher. "
            f"Changed answers on {rule['flipped']} of {rule['items']} passages, "
-           f"clear needs {PRECHECK_MAX_FLIP:.0%} or fewer.")
+           f"clear needs {RUBRIC_MAX_FLIP:.0%} or fewer.")
     return f'<span class="eeb-help" title="{tip}">?</span>'
 
 
@@ -98,7 +98,7 @@ def ai_answers(result: ModuleResult) -> None:
     ratings = result.details["ratings"]
     with st.expander("Show AI answers"):
         criterion = st.segmented_control(
-            "Rule", [r["criterion"] for r in result.details["rules"]], key="precheck_rule",
+            "Rule", [r["criterion"] for r in result.details["rules"]], key="rubric_rule",
             format_func=lambda c: c.replace("_", " ").capitalize(), label_visibility="collapsed",
         ) or result.details["rules"][0]["criterion"]
         subset = ratings[ratings["criterion"] == criterion]
@@ -123,7 +123,7 @@ def render() -> None:
     rules_table(result)
     ready = result.details["ready"]
     col, note = st.columns([1, 2], vertical_alignment="center")
-    if col.button("Start expert pilot", disabled=not ready, key="precheck_pilot"):
+    if col.button("Start expert pilot", disabled=not ready, key="rubric_pilot"):
         st.toast("Coming next: the expert pilot on the same passages.")
     if not ready:
         note.caption("Unlocks when all rules are clear.")

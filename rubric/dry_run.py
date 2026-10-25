@@ -1,7 +1,7 @@
-"""AI dry run: AI raters from different model families apply the draft rubric to the pre-check passages.
+"""AI dry run: AI raters from different model families apply the draft rubric to the rubric-check passages.
 
 Run once by hand from the repo root (needs GROQ_API_KEY):
-    python -m precheck.dry_run            # 2 models x 3 runs x 10 items x 2 criteria = 120 calls
+    python -m rubric.dry_run            # 2 models x 3 runs x 10 items x 2 criteria = 120 calls
 
 Writes data/dry_run.json after every call. Calls already in the file are skipped, so a rerun resumes.
 The app never calls a model; it only reads data/dry_run.json.
@@ -16,7 +16,7 @@ from openai import AuthenticationError, NotFoundError, OpenAI, RateLimitError
 
 ROOT = Path(__file__).resolve().parent.parent
 PROFILE_PATH = ROOT / "profiles" / "text_complexity.json"
-ITEMS_PATH = ROOT / "data" / "precheck_items.json"
+ITEMS_PATH = ROOT / "data" / "rubric_items.json"
 DRY_RUN_PATH = ROOT / "data" / "dry_run.json"
 
 # Two model families, so a shared quirk of one family does not read as a clear rubric.

@@ -8,7 +8,7 @@ import krippendorff
 import pandas as pd
 
 from config import (ALPHA_FAIR, COST_PER_HOUR, LEVELS, MINUTES_PER_LABEL, PILOT_EXPERTS, PILOT_ITEMS,
-                    PRECHECK_MAX_FLIP, REVISION_ROUNDS)
+                    RUBRIC_MAX_FLIP, REVISION_ROUNDS)
 from result import ModuleResult
 
 DRY_RUN_PATH = Path(__file__).resolve().parent.parent / "data" / "dry_run.json"
@@ -54,7 +54,7 @@ def confused_levels(runs: pd.DataFrame) -> tuple[str, str] | None:
 def check_rule(criterion: str, runs: pd.DataFrame) -> dict:
     alpha = ai_alpha(runs)
     flipped, items = flip_rate(runs)
-    clear = alpha >= ALPHA_FAIR and flipped / items <= PRECHECK_MAX_FLIP
+    clear = alpha >= ALPHA_FAIR and flipped / items <= RUBRIC_MAX_FLIP
     pair = confused_levels(runs)
     changed = f"changed answers on {flipped} of {items} passages"
 
@@ -90,13 +90,13 @@ def savings_line() -> str:
             f"${cost * REVISION_ROUNDS:,.0f}, and a pre-checked rubric needs one.")
 
 
-def precheck(path: Path | str = DRY_RUN_PATH) -> ModuleResult:
+def rubric(path: Path | str = DRY_RUN_PATH) -> ModuleResult:
     if not Path(path).exists():
-        return ModuleResult("precheck", None, "na",
-                            "Coming next: run python -m precheck.dry_run to rate the sample passages with AI raters.")
+        return ModuleResult("rubric", None, "na",
+                            "Coming next: run python -m rubric.dry_run to rate the sample passages with AI raters.")
     df = load_dry_run(path)
     if df.empty:
-        return ModuleResult("precheck", None, "na", "The AI dry run has no ratings yet.")
+        return ModuleResult("rubric", None, "na", "The AI dry run has no ratings yet.")
 
     rules = [check_rule(c, g) for c, g in df.groupby("criterion", sort=False)]
     unclear = [r for r in rules if not r["clear"]]
@@ -112,7 +112,7 @@ def precheck(path: Path | str = DRY_RUN_PATH) -> ModuleResult:
         reading = ("The AI raters applied every rule the same way across models and runs. "
                    "Start the expert pilot to see whether experts agree too.")
     return ModuleResult(
-        name="precheck",
+        name="rubric",
         value={r["criterion"]: r["clear"] for r in rules},
         status="weak" if unclear else "good",
         reading=reading,

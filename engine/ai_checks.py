@@ -157,7 +157,7 @@ def subjective_items(df: pd.DataFrame) -> ModuleResult:
 
 
 def stand_in(df: pd.DataFrame) -> ModuleResult:
-    """Plain lines for the Decision page, one per bucket the AI is judged on."""
+    """Plain lines for the Overview page, one per bucket the AI is judged on."""
     judge = judge_vs_experts(df)
     if judge.value is None:
         return ModuleResult("stand_in", None, "na", judge.reading)

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from precheck.analyze import check_rule, load_dry_run, precheck
+from rubric.analyze import check_rule, load_dry_run, rubric
 
 ITEMS = [f"pc_{i:02d}" for i in range(1, 11)]
 MODELS = ["model_a", "model_b"]
@@ -56,7 +56,7 @@ def test_confusing_rule_names_the_levels(dry_run):
 
 
 def test_verdict_counts_unclear_rules(dry_run):
-    result = precheck(dry_run)
+    result = rubric(dry_run)
     assert result.status == "weak"
     assert result.value == {"vocabulary": False, "sentence_structure": True}
     assert result.details["headline"] == "Not ready: fix 1 of 2 rules before experts rate"
@@ -64,12 +64,12 @@ def test_verdict_counts_unclear_rules(dry_run):
 
 
 def test_missing_dry_run_is_a_placeholder(tmp_path):
-    result = precheck(tmp_path / "missing.json")
+    result = rubric(tmp_path / "missing.json")
     assert result.status == "na"
     assert result.reading.startswith("Coming next")
 
 
 def test_savings_line_matches_spec(dry_run):
-    assert precheck(dry_run).details["savings"] == (
+    assert rubric(dry_run).details["savings"] == (
         "One expert round is 30 passages × 3 experts × 6 minutes = 9 hours ($540 at $60/hour). "
         "3 revision rounds cost $1,620, and a pre-checked rubric needs one.")

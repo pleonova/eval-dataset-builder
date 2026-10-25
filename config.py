@@ -28,11 +28,11 @@ COST_PER_HOUR = 60
 # "More ratings" chart: extra passages to project the Trusted share range for (example values)
 EXTRA_PASSAGES = [30, 60]
 
-# Pre-check: a rubric rule is clear when AI raters agree (alpha >= ALPHA_FAIR) and change their answer
+# Rubric tab: a rubric rule is clear when AI raters agree (alpha >= ALPHA_FAIR) and change their answer
 # on at most this share of passages (judgment call)
-PRECHECK_MAX_FLIP = 0.20
+RUBRIC_MAX_FLIP = 0.20
 
-# Pre-check savings line: one expert round on the rubric (example values)
+# Rubric tab savings line: one expert round on the rubric (example values)
 PILOT_ITEMS = 30
 PILOT_EXPERTS = 3
 REVISION_ROUNDS = 3

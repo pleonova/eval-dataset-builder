@@ -18,8 +18,8 @@ BUCKET_LINES = {
     "Re-rate": ("Experts split, not yet", "confirmed: add 2 experts"),
     "No expert consensus": ("Split held with new experts", "Likely subjective in practice"),
 }
-FILTER_KEY = "decision_bucket"
-LABELS_OPEN_KEY = "decision_labels_open"
+FILTER_KEY = "overview_bucket"
+LABELS_OPEN_KEY = "overview_labels_open"
 
 
 def filter_css() -> str:
@@ -64,8 +64,8 @@ CSS = f"""
 .eeb-range .pm {{ color: #6b7280; }}
 .eeb-range.last .name {{ font-weight: 600; }}
 .eeb-range.last .pm {{ color: {BLUE}; font-weight: 600; }}
-[class*="st-key-decision_bar"] [data-testid="stElementToolbar"] {{ display: none; }}
-.st-key-decision_mix {{ border-color: #d1d5db; border-radius: 8px; }}
+[class*="st-key-overview_bar"] [data-testid="stElementToolbar"] {{ display: none; }}
+.st-key-overview_mix {{ border-color: #d1d5db; border-radius: 8px; }}
 .eeb-crit {{ display: grid; grid-template-columns: 170px 1fr 200px; align-items: center; gap: 12px;
   font-size: 0.85rem; margin: 6px 0; }}
 .eeb-crit .track {{ height: 10px; border-radius: 5px; background: #f3f4f6; }}
@@ -110,7 +110,7 @@ def verdict_card(result: ModuleResult) -> None:
 def pick_bucket_from_bar(chart_key: str) -> None:
     """Clicking a color opens Show labels on that bucket; clicking it again closes Show labels."""
     points = st.session_state[chart_key].selection.get("pick", [])
-    st.session_state["decision_bar_version"] = st.session_state.get("decision_bar_version", 0) + 1
+    st.session_state["overview_bar_version"] = st.session_state.get("overview_bar_version", 0) + 1
     bucket = points[0]["bucket"] if points else None
     is_open = st.session_state.get(LABELS_OPEN_KEY, False)
     if bucket is None or (is_open and bucket == st.session_state.get(FILTER_KEY)):
@@ -136,7 +136,7 @@ def bucket_bar(counts: dict) -> alt.Chart:
 def where_labels_stand(results: dict[str, ModuleResult]) -> None:
     counts = results["buckets"].details["counts"]
     total = sum(counts.values())
-    with st.container(border=True, key="decision_mix"):
+    with st.container(border=True, key="overview_mix"):
         _labels_card(counts, total, results)
 
 
@@ -145,7 +145,7 @@ def _labels_card(counts: dict, total: int, results: dict[str, ModuleResult]) -> 
 <div class="eeb-kicker">Where labels stand</div>
 <div class="eeb-head"><span class="title">{counts['Trusted']} of {total} labels are safe to tune against</span>
   <span class="hint">Click a color to see those labels</span></div>""", unsafe_allow_html=True)
-    chart_key = f"decision_bar_{st.session_state.get('decision_bar_version', 0)}"
+    chart_key = f"overview_bar_{st.session_state.get('overview_bar_version', 0)}"
     st.altair_chart(bucket_bar(counts), width="stretch", on_select=partial(pick_bucket_from_bar, chart_key),
                     selection_mode="pick", key=chart_key)
 

@@ -107,7 +107,7 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
                    if len(others) > 1 else "")
         reading = (f"On {name}, experts split on the first try on {n_split[top]} of {n_items[top]} passages ({split[top]:.0%})"
                    f"{compare}. A second round settled most of them, so {trusted[top]:.0%} ended up Trusted, "
-                   f"but the {name} rubric wording is likely unclear. Check it in Pre-check before the next round.")
+                   f"but the {name} rubric wording is likely unclear. Check it in the Rubric tab before the next round.")
     return ModuleResult(
         name="round2_flag",
         value=split.to_dict(),
@@ -124,7 +124,7 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
 
 
 def verdict(df: pd.DataFrame) -> ModuleResult:
-    """One recommendation for the Decision page: what to do next and what it costs."""
+    """One recommendation for the Overview page: what to do next and what it costs."""
     result = buckets(df)
     if result.value is None:
         return result
