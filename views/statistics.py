@@ -46,8 +46,8 @@ def get_result() -> ModuleResult:
         name="statistics",
         value=None,
         status="na",
-        reading=("**Draft:** these numbers have not been checked yet.\n\n"
-                 "**Coming next:** whether the AI leans toward the lower or higher level when experts split."),
+        reading=("**Draft:** These numbers have not been checked yet.\n\n"
+                 "**Coming next:** Whether the AI leans toward the lower or higher level when experts split."),
     )
 
 

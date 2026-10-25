@@ -121,8 +121,8 @@ def get_result() -> ModuleResult:
         name="details",
         value=None,
         status="na",
-        reading=("**Placeholder:** sample data used to demonstrate how this page will look with real results.\n\n"
-                 "**Coming next:** the real numbers from the engine, with steps linked to their items."),
+        reading=("**Placeholder:** Sample data used to demonstrate how this page will look with real results.\n\n"
+                 "**Coming next:** The real numbers from the engine, with steps linked to their items."),
     )
 
 
