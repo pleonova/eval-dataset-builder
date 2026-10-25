@@ -156,8 +156,7 @@ def stand_in_panel() -> None:
 <div class="title">On the {COUNTS['No expert consensus']} No expert consensus items</div>
 <div class="row">✓ <b>Swap test:</b> AI in an expert's seat keeps agreement at 0.71 (range 0.66 to 0.74)</div>
 <div class="row">✓ <b>Self-consistency:</b> same answer in all 3 runs on 94 of 100 items</div>
-<div class="note">Passing means the AI is as reliable as one expert, not the panel. For decisions about
-individual students, keep a person reviewing these items.</div></div>""", unsafe_allow_html=True)
+<div class="note">Passing means the AI is as reliable as one expert, not the panel.</div></div>""", unsafe_allow_html=True)
 
 
 def item_table() -> None:
