@@ -2,6 +2,9 @@
 ALPHA_GOOD = 0.80
 ALPHA_FAIR = 0.67
 
+# Details tab: resamples of whole passages for the 95% alpha range per criterion
+ALPHA_BOOT = 200
+
 # Ordered levels, coded 1 to 4
 LEVELS = ["slightly_complex", "moderately_complex", "very_complex", "exceedingly_complex"]
 CRITERIA = ["sentence_structure", "vocabulary", "background_knowledge"]

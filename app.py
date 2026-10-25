@@ -1,6 +1,6 @@
 import streamlit as st
 
-from views import cost, details, overview, rubric
+from views import cost, overview, rubric, statistics
 
 st.set_page_config(page_title="Expert Eval Builder", layout="centered")
 st.markdown("""
@@ -17,15 +17,15 @@ st.markdown("""
   <div class="name">Expert Eval Builder</div>
 </div>""", unsafe_allow_html=True)
 
-tab_overview, tab_rubric, tab_details, tab_cost = st.tabs(
-    ["Overview", "Rubric", "Details", "Cost"]
+tab_overview, tab_rubric, tab_statistics, tab_cost = st.tabs(
+    ["Overview", "Rubric", "Statistics", "Cost"]
 )
 
 with tab_overview:
     overview.render()
 with tab_rubric:
     rubric.render()
-with tab_details:
-    details.render()
+with tab_statistics:
+    statistics.render()
 with tab_cost:
     cost.render()
