@@ -99,7 +99,7 @@ CSS = f"""
 .eeb-crit .track {{ height: 10px; border-radius: 5px; background: #f3f4f6; }}
 .eeb-crit .fill {{ height: 10px; border-radius: 5px; background: #9ca3af; }}
 .eeb-crit.flagged .name {{ font-weight: 600; }}
-.eeb-crit.flagged .fill {{ background: {BLUE}; }}
+.eeb-crit.flagged .fill {{ background: #4b5563; }}
 .eeb-crit .count {{ color: #6b7280; white-space: nowrap; }}
 {filter_css()}
 </style>
