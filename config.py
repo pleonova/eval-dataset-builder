@@ -11,3 +11,7 @@ TRUSTED_GOOD = 0.80
 TRUSTED_FAIR = 0.60
 
 BUCKETS = ["Trusted", "Re-rate", "No expert consensus"]
+
+# Share of items where all 3 judge runs agree: good >= 0.90, fair 0.75 to 0.90, weak < 0.75 (judgment call)
+SELF_CONSISTENCY_GOOD = 0.90
+SELF_CONSISTENCY_FAIR = 0.75
