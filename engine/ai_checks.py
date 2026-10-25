@@ -165,7 +165,7 @@ def before_ai(df: pd.DataFrame) -> list[str]:
         low = trusted.details["rows"][0]["low"]
         steps.append(f"Raise confidence in the labels: across the whole dataset, the Trusted share could be as low "
                      f"as {low:.0%}, so up to about 1 in {round(1 / trusted.details['unsafe'])} labels might not be correct. "
-                     f"Rate more passages to narrow it.")
+                     f"Rate more items to narrow it.")
     for name in round2_flag(df).details.get("flagged", []):
         name = name.replace("_", " ")
         steps.append(f"Clarify the {name} rubric, then recheck the AI on {name}.")

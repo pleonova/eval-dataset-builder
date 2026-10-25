@@ -97,17 +97,18 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
     } for c in split.sort_values(ascending=False).index]
 
     if flagged.empty:
-        reading = (f"Experts split on the first try on less than {ROUND2_FLAG_SHARE:.0%} of passages "
-                   f"for every criterion, so the rubric reads clearly.")
+        reading = (f"Experts split on the first try on less than {ROUND2_FLAG_SHARE:.0%} of items "
+                   f"for every criterion, so the rating instructions read clearly.")
     else:
         top = flagged.index[0]
         name = top.replace("_", " ")
         others = split.drop(flagged.index)
         compare = (f", against {others.min():.0%} to {others.max():.0%} on the other criteria"
                    if len(others) > 1 else "")
-        reading = (f"On {name}, experts split on the first try on {n_split[top]} of {n_items[top]} passages ({split[top]:.0%})"
-                   f"{compare}. A second round settled most of them, so {trusted[top]:.0%} ended up Trusted, "
-                   f"but the {name} rubric wording is likely unclear. Check it in the Rubric tab before the next round.")
+        reading = (f"On the {name} criterion, experts split on the first try on {n_split[top]} of {n_items[top]} items "
+                   f"({split[top]:.0%}){compare}. A second round settled most of them, so {trusted[top]:.0%} ended up "
+                   f"Trusted, but the instructions for rating {name} are likely unclear. Check them in the Rubric tab "
+                   f"before the next round.")
     return ModuleResult(
         name="round2_flag",
         value=split.to_dict(),
@@ -117,7 +118,7 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
             "flagged": list(flagged.index),
             "threshold": ROUND2_FLAG_SHARE,
             "rows": rows,
-            "headline": (f"{flagged.index[0].replace('_', ' ').capitalize()} wording is likely unclear"
+            "headline": (f"Instructions for rating the {flagged.index[0].replace('_', ' ')} criterion are likely unclear"
                          if len(flagged) else "Every criterion reads clearly"),
         },
     )
@@ -158,10 +159,10 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
         cost = rerate_cost
         reading = (f"Experts split on these and nobody has rechecked them. "
                    f"Add {RERATE_EXPERTS} new experts on each.")
-        risk = ("Tuning now only on agreed labels could bias the AI toward easier passages "
+        risk = ("Tuning now only on agreed labels could bias the AI toward easier items "
                 "and make it unreliable on harder ones.")
-        risk_help = ("Experts disagree on the harder passages. Until we check whether they truly disagree "
-                     "or just need more ratings, those passages can't be used to tune or check the AI.")
+        risk_help = ("Experts disagree on the harder items. Until we check whether they truly disagree "
+                     "or just need more ratings, those items can't be used to tune or check the AI.")
         status = "fair"
     elif result.value["Trusted"] >= TRUSTED_GOOD:
         action, cost = f"Tune on the {trusted} Trusted labels", ""
@@ -174,7 +175,7 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
     elif flagged:
         name = flagged[0].replace("_", " ")
         action, cost = f"Clarify the {name} rubric", ""
-        reading = f"Experts often split on {name} before a second round settled it."
+        reading = f"Experts often split on the {name} criterion before a second round settled it."
         status = "fair"
     else:
         action, cost = "Need more ratings", ""
@@ -201,7 +202,7 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
     for extra in [0] + EXTRA_PASSAGES:
         margin = float(1.96 * sd / np.sqrt(n + extra))
         rows.append({
-            "label": "Today" if extra == 0 else f"+{extra} passages",
+            "label": "Today" if extra == 0 else f"+{extra} items",
             "passages": n + extra,
             "low": max(0.0, share - margin),
             "high": min(1.0, share + margin),
@@ -211,10 +212,12 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
     unsafe = 1 - today["low"]
     warning = f"so up to about 1 in {round(1 / unsafe)} labels might not be correct." if unsafe else ""
     trusted = int((table["bucket"] == "Trusted").sum())
-    reading = (f"{share:.0%} of the whole dataset is Trusted: {trusted} of all {len(table)} labels, counting "
-               f"Re-rate and No expert consensus. Across the whole dataset, the true share could be anywhere from "
+    reading = (f"{share:.0%} of the whole dataset is Trusted ({trusted} of all {len(table)} labels). "
+               f"Across the whole dataset, the true share could be anywhere from "
                f"{today['low']:.0%} to {today['high']:.0%}" + (f", {warning} " if warning else ". ")
-               + f"Rating {EXTRA_PASSAGES[-1]} more passages narrows that to {last['low']:.0%} to {last['high']:.0%}.")
+               + f"Two things narrow it: rating more items (another {EXTRA_PASSAGES[-1]} narrows it to "
+               f"{last['low']:.0%} to {last['high']:.0%}), or more agreement between experts on each item, "
+               f"for example from clearer rating instructions.")
     return ModuleResult(
         name="trusted_range",
         value=share,
@@ -222,6 +225,6 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
         reading=reading,
         details={"rows": rows, "share": share, "unsafe": unsafe, "warning": warning,
                  "help": ("A 95% range for the Trusted share across the whole dataset: the true share most likely "
-                          "falls inside it. It is worked out passage by passage, so it narrows as more passages "
-                          "are rated.")},
+                          "falls inside it. It is worked out item by item, so it narrows as more items are rated "
+                          "or as experts agree more often on each item.")},
     )

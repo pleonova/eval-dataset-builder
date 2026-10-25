@@ -93,9 +93,9 @@ CSS = f"""
 .eeb-crit .track {{ height: 10px; border-radius: 5px; background: #f3f4f6; }}
 .eeb-crit .fill {{ height: 10px; border-radius: 5px; background: #9ca3af; }}
 .eeb-crit.flagged .name {{ font-weight: 600; }}
-.eeb-crit.flagged .fill {{ background: #4b5563; }}
+.eeb-crit.flagged .fill {{ background: {RED}; }}
 .eeb-crit .count {{ color: #6b7280; white-space: nowrap; }}
-.eeb-crit .tag {{ color: {BLUE}; font-weight: 600; }}
+.eeb-crit .tag {{ color: {RED}; font-weight: 600; }}
 .eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
@@ -206,13 +206,14 @@ def rubric_card(result: ModuleResult) -> None:
         tag = '<span class="tag"> · rubric unclear</span>' if r["flagged"] else ""
         rows.append(f"""
 <div class="eeb-crit{flagged}"><span class="name">{r['criterion'].replace('_', ' ').capitalize()}</span>
-  <div class="track"><div class="fill" style="width:{r['share'] * 100:.0f}%"></div></div>
-  <span class="count">{r['split']} of {r['items']} split{tag}</span></div>""")
+  <div class="track"><div class="fill" style="width:{(1 - r['share']) * 100:.0f}%"></div></div>
+  <span class="count">{r['items'] - r['split']} of {r['items']} agree{tag}</span></div>""")
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">Is the rubric clear?</div>
 <div class="title">{result.details.get("headline", "")}</div>
-<div class="sub">Passages where experts split on the first try and needed a second round. A high share points
-to unclear wording, even when the second round settles the label.</div>
+<div class="sub">A criterion is one thing experts rate the text on, like vocabulary or sentence structure. Each bar
+shows the items where at least 3 of 4 experts agreed on the first try. A low share points to unclear rating
+instructions for that criterion, even when a second round settles the label.</div>
 {''.join(rows)}
 <div class="note">{result.reading}</div></div>""", unsafe_allow_html=True)
 
@@ -274,13 +275,13 @@ def item_table(results: dict[str, ModuleResult]) -> None:
     if choice == "No expert consensus":
         items = results["subjective"].details["items"].copy()
         items["judge"] = items["judge"].str.replace("_", " ")
-        columns = {"item_id": "Passage", "criterion": "Criterion", "round1": "Round 1 experts",
+        columns = {"item_id": "Item", "criterion": "Criterion", "round1": "Round 1 experts",
                    "round2": "Round 2 experts", "judge": "AI judge"}
     else:
         items = results["buckets"].details["items"]
         items = items[items["bucket"] == choice].copy() if choice else items.copy()
         items["label"] = items["label"].str.replace("_", " ")
-        columns = {"item_id": "Passage", "criterion": "Criterion", "label": "Label",
+        columns = {"item_id": "Item", "criterion": "Criterion", "label": "Label",
                    "round1": "Round 1 experts", "round2": "Round 2 experts"}
         if choice == "Re-rate":
             del columns["label"], columns["round2"]
