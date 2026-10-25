@@ -40,19 +40,28 @@ def _trusted(df: pd.DataFrame) -> pd.DataFrame:
     return table[table["bucket"] == "Trusted"] if not table.empty else table
 
 
-def expert_kappas(df: pd.DataFrame, trusted: pd.DataFrame | None = None) -> dict[str, float]:
-    """Each round-1 expert against the majority of the other three, on Trusted items."""
+def _expert_vs_rest(df: pd.DataFrame, trusted: pd.DataFrame | None = None) -> dict[str, pd.DataFrame]:
+    """For each round-1 expert, their label next to the majority of the other three, on Trusted items."""
     trusted = _trusted(df) if trusted is None else trusted
     experts = round1_experts(df).merge(trusted[KEY], on=KEY)
     wide = experts.pivot_table(index=KEY, columns="rater_id", values="label", aggfunc="first")
-    kappas = {}
+    pairs = {}
     for rater in wide.columns:
-        others = wide.drop(columns=rater)
-        rest = others.apply(lambda r: majority(r.dropna()), axis=1)
-        pairs = pd.DataFrame({"own": wide[rater], "rest": rest}).dropna()
-        if not pairs.empty:
-            kappas[rater] = qwk(pairs["own"], pairs["rest"])
-    return kappas
+        rest = wide.drop(columns=rater).apply(lambda r: majority(r.dropna()), axis=1)
+        both = pd.DataFrame({"own": wide[rater], "rest": rest}).dropna()
+        if not both.empty:
+            pairs[rater] = both
+    return pairs
+
+
+def expert_kappas(df: pd.DataFrame, trusted: pd.DataFrame | None = None) -> dict[str, float]:
+    """Each round-1 expert against the majority of the other three, on Trusted items."""
+    return {r: qwk(p["own"], p["rest"]) for r, p in _expert_vs_rest(df, trusted).items()}
+
+
+def expert_matches(df: pd.DataFrame, trusted: pd.DataFrame | None = None) -> dict[str, float]:
+    """Share of Trusted items where each expert gives the same label as the other three's majority."""
+    return {r: float((p["own"] == p["rest"]).mean()) for r, p in _expert_vs_rest(df, trusted).items()}
 
 
 def judge_vs_experts(df: pd.DataFrame) -> ModuleResult:
@@ -124,7 +133,7 @@ def self_consistency(df: pd.DataFrame) -> ModuleResult:
         name="self_consistency",
         value=share,
         status=self_consistency_status(share),
-        reading=f"The judge gives the same answer on all 3 runs for {share:.0%} of items.",
+        reading=f"It gives the same answer on all 3 runs for {share:.0%} of labels.",
         details={"by_criterion": by_criterion, "flips": table[~table["consistent"]]},
     )
 
@@ -153,23 +162,38 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
     if judge.value is None:
         return ModuleResult("stand_in", None, "na", judge.reading)
     n, exact = judge.details["n_items"], judge.details["n_exact"]
-    answer = "yes" if judge.status == "good" else "not yet"
-    lines = [
-        {"bucket": "Trusted", "text": f"Trusted labels: {answer}, it matches experts on {exact} of {n}"},
-        {"bucket": "No expert consensus",
-         "text": "No expert consensus: it acts like one expert, so keep a person reviewing"},
-    ]
+    matches = expert_matches(df)
+    low, high = min(matches.values()), max(matches.values())
+    expert_range = f"{low:.0%}" if round(low, 2) == round(high, 2) else f"{low:.0%} to {high:.0%}"
+    trusted_line = (f"It matches the expert answer on {exact / n:.0%}. "
+                    f"Experts match each other on {expert_range}.")
+
+    subjective = subjective_items(df).details.get("items", pd.DataFrame())
+    split_line = None
+    if len(subjective):
+        inside = sum(row.judge in row.round1.split(", ") for row in subjective.itertuples())
+        if inside == len(subjective):
+            picks = "the AI picks one of the levels they gave, as another expert would."
+        else:
+            picks = f"the AI picks one of the levels they gave on {inside} of {len(subjective)}."
+        split_line = f"Not scored. Experts split, and {picks}"
+
+    lines = [{"bucket": "Trusted", "label": f"Trusted ({n})", "text": trusted_line}]
+    if split_line:
+        lines.append({"bucket": "No expert consensus", "label": f"No expert consensus ({len(subjective)})",
+                      "text": split_line})
     consistency = self_consistency(df)
     return ModuleResult(
         name="stand_in",
         value=judge.status == "good",
         status=judge.status,
-        reading=lines[0]["text"],
+        reading=trusted_line,
         details={
             "lines": lines,
             "note": consistency.reading,
             "note_status": consistency.status,
-            "headline": ("Yes, on labels where experts agree" if judge.status == "good"
-                         else "Not yet, even where experts agree"),
+            "expert_matches": matches,
+            "headline": ("Yes: use the AI to rate new passages" if judge.status == "good"
+                         else "Not yet: keep experts rating new passages"),
         },
     )

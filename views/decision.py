@@ -178,7 +178,7 @@ to unclear wording, even when the second round settles the label.</div>
 
 
 def stand_in_card(result: ModuleResult) -> None:
-    rows = "".join(f'<div class="row">{dot(line["bucket"])}{line["text"]}</div>'
+    rows = "".join(f'<div class="row">{dot(line["bucket"])}<b>{line["label"]}:</b> {line["text"]}</div>'
                    for line in result.details.get("lines", []))
     note = f'<div class="note">{result.details["note"]}</div>' if result.details.get("note") else ""
     st.markdown(f"""
@@ -248,8 +248,8 @@ def render() -> None:
 
     verdict_card(results["verdict"])
     where_labels_stand(results)
-    rubric_card(results["round2"])
     stand_in_card(results["stand_in"])
+    rubric_card(results["round2"])
     certainty_card(results["range"])
     st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
                 unsafe_allow_html=True)
