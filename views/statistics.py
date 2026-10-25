@@ -46,7 +46,8 @@ def get_result() -> ModuleResult:
         name="statistics",
         value=None,
         status="na",
-        reading="Coming next: alpha by criterion with grouped ranges, confusion between levels, per-rater kappa.",
+        reading=("Draft: these numbers have not been checked yet.\n\n"
+                 "Coming next: whether the AI leans toward the lower or higher level when experts split."),
     )
 
 
