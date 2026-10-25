@@ -1,7 +1,8 @@
 """Sort each item and criterion into Trusted, Re-rate, or No expert consensus."""
+import numpy as np
 import pandas as pd
 
-from config import (BUCKETS, COST_PER_HOUR, MINUTES_PER_LABEL, RERATE_EXPERTS, ROUND2_FLAG_SHARE,
+from config import (BUCKETS, COST_PER_HOUR, EXTRA_PASSAGES, MINUTES_PER_LABEL, RERATE_EXPERTS, ROUND2_FLAG_SHARE,
                     TRUSTED_FAIR, TRUSTED_GOOD)
 from engine.consensus import majority
 from engine.load import is_expert
@@ -139,4 +140,35 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         status=status,
         reading=reading,
         details={"action": action, "cost": cost, "counts": counts, "total": sum(counts.values())},
+    )
+
+
+def trusted_range(df: pd.DataFrame) -> ModuleResult:
+    """Trusted share with a 95% range grouped by passage, today and with more passages rated."""
+    table = bucket_table(df)
+    if table.empty:
+        return ModuleResult("trusted_range", None, "na", "No expert ratings yet.")
+
+    per_passage = (table["bucket"] == "Trusted").groupby(table["item_id"]).mean()
+    share, sd, n = float(per_passage.mean()), float(per_passage.std(ddof=1)), len(per_passage)
+    rows = []
+    for extra in [0] + EXTRA_PASSAGES:
+        margin = float(1.96 * sd / np.sqrt(n + extra))
+        rows.append({
+            "label": "Today" if extra == 0 else f"+{extra} passages",
+            "passages": n + extra,
+            "low": max(0.0, share - margin),
+            "high": min(1.0, share + margin),
+            "margin": margin,
+        })
+    today, last = rows[0], rows[-1]
+    reading = (f"{share:.0%} of labels are Trusted, and the true share could be anywhere from "
+               f"{today['low']:.0%} to {today['high']:.0%}. Rating {EXTRA_PASSAGES[-1]} more passages "
+               f"narrows that to about ±{last['margin'] * 100:.0f} points.")
+    return ModuleResult(
+        name="trusted_range",
+        value=share,
+        status="na",
+        reading=reading,
+        details={"rows": rows, "share": share},
     )

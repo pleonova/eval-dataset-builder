@@ -24,3 +24,6 @@ ROUND2_FLAG_SHARE = 0.45
 RERATE_EXPERTS = 2
 MINUTES_PER_LABEL = 6
 COST_PER_HOUR = 60
+
+# "More ratings" chart: extra passages to project the Trusted share range for (example values)
+EXTRA_PASSAGES = [30, 60]
