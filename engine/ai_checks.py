@@ -165,5 +165,11 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
         value=judge.status == "good",
         status=judge.status,
         reading=lines[0]["text"],
-        details={"lines": lines, "note": consistency.reading, "note_status": consistency.status},
+        details={
+            "lines": lines,
+            "note": consistency.reading,
+            "note_status": consistency.status,
+            "headline": ("Yes, on labels where experts agree" if judge.status == "good"
+                         else "Not yet, even where experts agree"),
+        },
     )

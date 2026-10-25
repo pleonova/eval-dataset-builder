@@ -83,25 +83,43 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
     if table.empty:
         return ModuleResult("round2_flag", None, "na", "No expert ratings yet.")
 
-    split = table.groupby("criterion")["split"].mean()
-    trusted = table.assign(t=table["bucket"] == "Trusted").groupby("criterion")["t"].mean()
+    by_criterion = table.assign(trusted=table["bucket"] == "Trusted").groupby("criterion")
+    split, n_split, n_items = by_criterion["split"].mean(), by_criterion["split"].sum(), by_criterion.size()
+    trusted = by_criterion["trusted"].mean()
     flagged = split[split >= ROUND2_FLAG_SHARE].sort_values(ascending=False)
+    rows = [{
+        "criterion": c,
+        "split": int(n_split[c]),
+        "items": int(n_items[c]),
+        "share": float(split[c]),
+        "trusted": float(trusted[c]),
+        "flagged": c in flagged.index,
+    } for c in split.sort_values(ascending=False).index]
+
     if flagged.empty:
-        reading = f"No criterion needed a second expert round on more than {ROUND2_FLAG_SHARE:.0%} of items."
+        reading = (f"Experts split on the first try on less than {ROUND2_FLAG_SHARE:.0%} of passages "
+                   f"for every criterion, so the rubric reads clearly.")
     else:
-        lines = []
-        for criterion, share in flagged.items():
-            name = criterion.replace("_", " ").capitalize()
-            usable = "are usable, but" if trusted[criterion] >= TRUSTED_FAIR else "are not usable yet, and"
-            lines.append(f"{name} labels {usable} 1 in {round(1 / share)} needed a second expert round.")
-        lines.append("The rubric wording is the likely cause. See Pre-check.")
-        reading = " ".join(lines)
+        top = flagged.index[0]
+        name = top.replace("_", " ")
+        others = split.drop(flagged.index)
+        compare = (f", against {others.min():.0%} to {others.max():.0%} on the other criteria"
+                   if len(others) > 1 else "")
+        reading = (f"On {name}, experts split on the first try on {n_split[top]} of {n_items[top]} passages ({split[top]:.0%})"
+                   f"{compare}. A second round settled most of them, so {trusted[top]:.0%} ended up Trusted, "
+                   f"but the {name} rubric wording is likely unclear. Check it in Pre-check before the next round.")
     return ModuleResult(
         name="round2_flag",
         value=split.to_dict(),
         status="weak" if len(flagged) else "good",
         reading=reading,
-        details={"flagged": list(flagged.index), "threshold": ROUND2_FLAG_SHARE},
+        details={
+            "flagged": list(flagged.index),
+            "threshold": ROUND2_FLAG_SHARE,
+            "rows": rows,
+            "headline": (f"{flagged.index[0].replace('_', ' ').capitalize()} wording is likely unclear"
+                         if len(flagged) else "Every criterion reads clearly"),
+        },
     )
 
 
@@ -111,10 +129,8 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
     if result.value is None:
         return result
     counts = result.details["counts"]
-    flag = round2_flag(df)
-    flagged = flag.details["flagged"]
+    flagged = round2_flag(df).details["flagged"]
     trusted, rerate = counts["Trusted"], counts["Re-rate"]
-    also = ""
 
     if rerate:
         hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
@@ -123,8 +139,6 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         reading = (f"Experts split on these and nobody has rechecked them. "
                    f"Add {RERATE_EXPERTS} new experts on each.")
         status = "fair"
-        if flagged:
-            also = flag.reading
     elif flagged:
         name = flagged[0].replace("_", " ")
         action, cost = f"Clarify the {name} rubric", ""
@@ -143,7 +157,7 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         value=action,
         status=status,
         reading=reading,
-        details={"action": action, "cost": cost, "also": also, "counts": counts, "total": sum(counts.values())},
+        details={"action": action, "cost": cost, "counts": counts, "total": sum(counts.values())},
     )
 
 
