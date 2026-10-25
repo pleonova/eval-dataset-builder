@@ -73,7 +73,9 @@ def buckets(df: pd.DataFrame) -> ModuleResult:
         value=shares,
         status=bucket_status(shares["Trusted"]),
         reading=reading,
-        details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table, "help": BUCKET_HELP},
+        details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table, "help": BUCKET_HELP,
+                 "label_help": ("A label is the experts' level for one item (a passage) on one criterion. Each item is "
+                                "rated on 3 criteria, so it has 3 labels.")},
     )
 
 
@@ -97,18 +99,12 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
     } for c in split.sort_values(ascending=False).index]
 
     if flagged.empty:
-        reading = (f"Experts split on the first try on less than {ROUND2_FLAG_SHARE:.0%} of items "
-                   f"for every criterion, so the rating instructions read clearly.")
+        reading = (f"Experts split on less than {ROUND2_FLAG_SHARE:.0%} of items for every criterion, "
+                   f"so the rating instructions read clearly.")
     else:
         top = flagged.index[0]
         name = top.replace("_", " ")
-        others = split.drop(flagged.index)
-        compare = (f", against {others.min():.0%} to {others.max():.0%} on the other criteria"
-                   if len(others) > 1 else "")
-        reading = (f"On the {name} criterion, experts split on the first try on {n_split[top]} of {n_items[top]} items "
-                   f"({split[top]:.0%}){compare}. A second round settled most of them, so {trusted[top]:.0%} ended up "
-                   f"Trusted, but the instructions for rating {name} are likely unclear. Check them in the Rubric tab "
-                   f"before the next round.")
+        reading = f"Experts split on {split[top]:.0%} of {name} items. Fix the wording before more items are rated."
     return ModuleResult(
         name="round2_flag",
         value=split.to_dict(),
@@ -117,6 +113,12 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
         details={
             "flagged": list(flagged.index),
             "threshold": ROUND2_FLAG_SHARE,
+            "help": {
+                "criterion": "One thing experts rate the text on, like vocabulary or sentence structure.",
+                "agreed": (f"At least 3 of 4 experts gave the same level. A criterion is flagged when experts split "
+                           f"on {ROUND2_FLAG_SHARE:.0%} or more of its items, which may point to unclear rating "
+                           f"instructions."),
+            },
             "rows": rows,
             "headline": (f"Instructions for rating the {flagged.index[0].replace('_', ' ')} criterion are likely unclear"
                          if len(flagged) else "Every criterion reads clearly"),
@@ -135,58 +137,81 @@ BUCKET_HELP = {
 
 
 def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
-    """One recommendation for the Overview page: go or no go on the labels to tune against.
+    """The recommendation for the Overview page: go or no go on the labels to tune against.
 
-    Re-rate comes first: tuning on Trusted labels alone would lean toward the easier passages. Go only when
-    nothing is left to re-rate and the Trusted share reaches TRUSTED_GOOD.
+    No go while a criterion is flagged or labels wait for a re-rate. Then the card lists numbered steps, rubric
+    first, since re-rating under wording that is about to change wastes the re-rate. Go only when both are clear
+    and the Trusted share reaches TRUSTED_GOOD.
     `ai` (from `engine.ai_checks.stand_in`) only adds whether the AI matches experts on Trusted labels."""
     result = buckets(df)
     if result.value is None:
         return result
     counts = result.details["counts"]
-    flagged = round2_flag(df).details["flagged"]
+    table = result.details["items"]
+    flag = round2_flag(df)
+    flagged = flag.details["flagged"]
     trusted, rerate, total = counts["Trusted"], counts["Re-rate"], sum(counts.values())
-
-    hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
-    rerate_cost = f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}"
     no_consensus = counts["No expert consensus"]
-    risk = risk_help = ""
-    cost_help = (f"{rerate} labels × {RERATE_EXPERTS} new experts × {MINUTES_PER_LABEL} minutes each = "
-                 f"{hours:.1f} hours, at ${COST_PER_HOUR} per hour. Example rates.")
+    steps = []
 
+    if flagged:
+        name = flagged[0].replace("_", " ")
+        is_trusted = table["bucket"] == "Trusted"
+        in_flagged = table["criterion"].isin(flagged)
+        steps.append({
+            "action": "Clarify the rubric",
+            "cost": "",
+            "cost_help": "",
+            "reading": (f"{name.capitalize()} criterion: test new wording in the Rubric tab, "
+                        f"then spot-check its Trusted labels."),
+            "term": "spot-check its Trusted labels",
+            "term_help": (f"Only {name} labels are affected: the other criteria ({int((is_trusted & ~in_flagged).sum())} "
+                          f"Trusted labels) keep their wording. If the fix only sharpens the wording, the "
+                          f"{int((is_trusted & in_flagged).sum())} {name} Trusted labels most likely still hold, and the "
+                          f"spot-check confirms it. If it changes what a level means, {name} needs re-rating."),
+        })
     if rerate:
-        action = f"Re-rate {rerate} labels"
-        cost = rerate_cost
-        reading = (f"Experts split on these and nobody has rechecked them. "
-                   f"Add {RERATE_EXPERTS} new experts on each.")
+        hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
+        reading = f"Add {RERATE_EXPERTS} new experts to each."
+        steps.append({
+            "action": f"Re-rate {rerate} labels",
+            "cost": f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}",
+            "cost_help": (f"{rerate} labels × {RERATE_EXPERTS} new experts × {MINUTES_PER_LABEL} minutes each = "
+                          f"{hours:.1f} hours, at ${COST_PER_HOUR} per hour. Example rates."),
+            "reading": reading,
+        })
+
+    risk = risk_help = ""
+    if steps:
+        causes = ("truly disagree, need more ratings, or read an unclear rubric differently" if flagged
+                  else "truly disagree or just need more ratings")
         risk = ("Tuning now only on agreed labels could bias the AI toward easier items "
                 "and make it unreliable on harder ones.")
-        risk_help = ("Experts disagree on the harder items. Until we check whether they truly disagree "
-                     "or just need more ratings, those items can't be used to tune or check the AI.")
+        risk_help = (f"Experts disagree on the harder labels. Until we check whether they {causes}, "
+                     f"those labels can't be used to tune or check the AI.")
         status = "fair"
     elif result.value["Trusted"] >= TRUSTED_GOOD:
-        action, cost = f"Tune on the {trusted} Trusted labels", ""
-        reading = ("Experts agree on these, and the AI matches them as well as experts match each other."
-                   if ai is not None and ai.value else "Experts agree on these.")
+        steps.append({
+            "action": f"Tune on the {trusted} Trusted labels",
+            "cost": "",
+            "cost_help": "",
+            "reading": ("Experts agree on these, and the AI matches them as well as experts match each other."
+                        if ai is not None and ai.value else "Experts agree on these."),
+        })
         if no_consensus:
             risk = (f"On the {no_consensus} No expert consensus labels there is no agreed answer, "
                     f"so the AI can't be checked there.")
         status = "good"
-    elif flagged:
-        name = flagged[0].replace("_", " ")
-        action, cost = f"Clarify the {name} rubric", ""
-        reading = f"Experts often split on the {name} criterion before a second round settled it."
-        status = "fair"
     else:
-        action, cost = "Need more ratings", ""
-        reading = "Too few labels are Trusted to check the AI against yet."
+        steps.append({"action": "Need more ratings", "cost": "", "cost_help": "",
+                      "reading": "Too few labels are Trusted to check the AI against yet."})
         status = "weak"
     return ModuleResult(
         name="verdict",
-        value=action,
+        value=steps[0]["action"],
         status=status,
-        reading=reading,
-        details={"action": action, "cost": cost, "cost_help": cost_help if cost else "", "risk": risk, "risk_help": risk_help, "counts": counts, "total": total},
+        reading=steps[0]["reading"],
+        details={"steps": steps, "risk": risk, "risk_help": risk_help, "counts": counts, "total": total},
     )
 
 

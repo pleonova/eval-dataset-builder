@@ -13,7 +13,7 @@ from result import ModuleResult
 from views import RED
 
 BLUE = "#2563eb"
-BUCKET_COLORS = {"Trusted": "#4caf50", "Re-rate": "#f59e0b", "No expert consensus": "#ec7fa9"}
+BUCKET_COLORS = {"Trusted": "#4caf50", "Re-rate": RED, "No expert consensus": "#eab308"}
 BUCKET_LINES = {
     "Trusted": ("Experts agree", "Use to test the AI"),
     "Re-rate": ("Experts split, not yet", "confirmed: add 2 experts"),
@@ -40,12 +40,15 @@ CSS = f"""
 <style>
 .eeb-banner {{ background: {BLUE}14; border-left: 3px solid {BLUE}; border-radius: 6px; padding: 10px 14px;
   font-size: 0.9rem; margin-bottom: 1.25rem; }}
-.eeb-verdict {{ border: 2px solid {BLUE}; border-radius: 8px; padding: 14px 16px; margin-bottom: 1.5rem; }}
+.eeb-verdict {{ border: 2px solid {RED}; background: {RED}0a; border-radius: 8px; padding: 14px 16px;
+  margin-bottom: 1.5rem; }}
+.eeb-verdict .eeb-kicker {{ color: {RED}; }}
 .eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
 .eeb-kicker {{ font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
   color: {BLUE}; margin-bottom: 4px; }}
 .eeb-verdict .action {{ font-size: 1.2rem; font-weight: 600; }}
 .eeb-verdict .reason {{ margin-top: 6px; }}
+.eeb-verdict .step + .step {{ margin-top: 14px; }}
 .eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; font-style: italic; margin-top: 8px; }}
 .eeb-tip {{ position: relative; border-bottom: 1px dotted #9ca3af; cursor: help; outline: none; }}
 .eeb-tip:hover, .eeb-tip:focus {{ border-bottom-color: {BLUE}; }}
@@ -86,6 +89,9 @@ CSS = f"""
 .eeb-range .pm {{ color: #6b7280; }}
 .eeb-range.last .name {{ font-weight: 600; }}
 .eeb-range.last .pm {{ color: {BLUE}; font-weight: 600; }}
+.eeb-range.today .name, .eeb-range.today .pm {{ color: {RED}; font-weight: 600; }}
+.eeb-range.today .span {{ background: {RED}; opacity: 0.6 !important; }}
+.eeb-range.today .point {{ background: {RED}; }}
 [class*="st-key-overview_bar"] [data-testid="stElementToolbar"] {{ display: none; }}
 .st-key-overview_mix {{ border-color: #d1d5db; border-radius: 8px; }}
 .eeb-crit {{ display: grid; grid-template-columns: 170px 1fr 200px; align-items: center; gap: 12px;
@@ -128,19 +134,28 @@ def dot(bucket: str) -> str:
 
 
 def verdict_card(result: ModuleResult) -> None:
-    cost = result.details.get("cost", "")
-    if cost and result.details.get("cost_help"):
-        cost = help_term(cost, "How the cost is worked out", result.details["cost_help"], "right")
-    cost = f"<span>{cost}</span>" if cost else ""
+    steps = result.details.get("steps", [])
+    numbered = len(steps) > 1
+    blocks = []
+    for i, step in enumerate(steps, start=1):
+        cost = step["cost"]
+        if cost and step["cost_help"]:
+            cost = help_term(cost, "How the cost is worked out", step["cost_help"], "right")
+        cost = f"<span>{cost}</span>" if cost else ""
+        number = f"{i}. " if numbered else ""
+        reading = step["reading"]
+        if step.get("term"):
+            reading = reading.replace(step["term"], help_term(step["term"], "What a rubric fix changes", step["term_help"]))
+        blocks.append(f"""
+  <div class="step"><div class="top"><span class="action">{number}{step['action']}</span>{cost}</div>
+  <div class="reason">{reading}</div></div>""")
     label = "<b>Risk:</b>"
     if result.details.get("risk_help"):
         label = help_term(label, "Why this is a risk", result.details["risk_help"])
     risk = f'<div class="risk">{label} {result.details["risk"]}</div>' if result.details.get("risk") else ""
     st.markdown(f"""
 <div class="eeb-verdict">
-  <div class="eeb-kicker">What to do next</div>
-  <div class="top"><span class="action">{result.details.get('action', result.reading)}</span>{cost}</div>
-  <div class="reason">{result.reading}</div>{risk}
+  <div class="eeb-kicker">What to do next</div>{''.join(blocks) or result.reading}{risk}
 </div>""", unsafe_allow_html=True)
 
 
@@ -178,9 +193,11 @@ def where_labels_stand(results: dict[str, ModuleResult]) -> None:
 
 
 def _labels_card(counts: dict, total: int, results: dict[str, ModuleResult]) -> None:
+    label_help = results["buckets"].details.get("label_help")
+    labels = help_term("labels", "Label", label_help) if label_help else "labels"
     st.markdown(f"""
 <div class="eeb-kicker">Where labels stand</div>
-<div class="eeb-head"><span class="title">{counts['Trusted']} of {total} labels are safe to tune against</span>
+<div class="eeb-head"><span class="title">{counts['Trusted']} of {total} {labels} are safe to tune against</span>
   <span class="hint">Click a color to see those labels</span></div>""", unsafe_allow_html=True)
     chart_key = f"overview_bar_{st.session_state.get('overview_bar_version', 0)}"
     st.altair_chart(bucket_bar(counts), width="stretch", on_select=partial(pick_bucket_from_bar, chart_key),
@@ -200,6 +217,9 @@ def _labels_card(counts: dict, total: int, results: dict[str, ModuleResult]) -> 
 
 
 def rubric_card(result: ModuleResult) -> None:
+    terms = result.details.get("help", {})
+    agreed = help_term("agreed", "Agreed", terms["agreed"]) if "agreed" in terms else "agreed"
+    criterion = help_term("criterion", "Criterion", terms["criterion"], "right") if "criterion" in terms else "criterion"
     rows = []
     for r in result.details.get("rows", []):
         flagged = " flagged" if r["flagged"] else ""
@@ -211,9 +231,7 @@ def rubric_card(result: ModuleResult) -> None:
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">Is the rubric clear?</div>
 <div class="title">{result.details.get("headline", "")}</div>
-<div class="sub">A criterion is one thing experts rate the text on, like vocabulary or sentence structure. Each bar
-shows the items where at least 3 of 4 experts agreed on the first try. A low share points to unclear rating
-instructions for that criterion, even when a second round settles the label.</div>
+<div class="sub">How often experts {agreed} on each {criterion}. A low bar may mean unclear rubric wording.</div>
 {''.join(rows)}
 <div class="note">{result.reading}</div></div>""", unsafe_allow_html=True)
 
@@ -242,7 +260,7 @@ def certainty_card(result: ModuleResult) -> None:
     lines = []
     for i, r in enumerate(rows):
         opacity = 0.25 + 0.5 * i / max(1, len(rows) - 1)
-        last = " last" if i == len(rows) - 1 else ""
+        last = " today" if i == 0 else " last" if i == len(rows) - 1 else ""
         lines.append(f"""
 <div class="eeb-range{last}"><span class="name">{r['label']}</span>
   <div class="track"><div class="span" style="left:{pos(r['low']):.1f}%;width:{pos(r['high']) - pos(r['low']):.1f}%;opacity:{opacity:.2f}"></div>
@@ -302,8 +320,8 @@ def render() -> None:
                 unsafe_allow_html=True)
     verdict_card(results["verdict"])
     where_labels_stand(results)
-    certainty_card(results["range"])
     rubric_card(results["round2"])
+    certainty_card(results["range"])
     stand_in_card(results["stand_in"])
     st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
                 unsafe_allow_html=True)

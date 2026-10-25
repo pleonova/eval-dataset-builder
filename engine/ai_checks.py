@@ -70,7 +70,7 @@ def judge_vs_experts(df: pd.DataFrame) -> ModuleResult:
     judged = merged.dropna(subset=["label", "judge"])
     kappas = expert_kappas(df, trusted)
     if judged.empty or not kappas:
-        return ModuleResult("judge_kappa", None, "na", "Not enough Trusted items to compare the judge with experts.")
+        return ModuleResult("judge_kappa", None, "na", "Not enough Trusted labels to compare the judge with experts.")
 
     kappa = qwk(judged["judge"], judged["label"])
     low, high = min(kappas.values()), max(kappas.values())
@@ -103,7 +103,7 @@ def judge_vs_experts(df: pd.DataFrame) -> ModuleResult:
 def ai_ceiling(df: pd.DataFrame) -> ModuleResult:
     kappas = expert_kappas(df)
     if not kappas:
-        return ModuleResult("ai_ceiling", None, "na", "Not enough Trusted items to set an AI ceiling.")
+        return ModuleResult("ai_ceiling", None, "na", "Not enough Trusted labels to set an AI ceiling.")
     ceiling = sum(kappas.values()) / len(kappas)
     return ModuleResult(
         name="ai_ceiling",
@@ -146,7 +146,7 @@ def subjective_items(df: pd.DataFrame) -> ModuleResult:
         return ModuleResult("subjective", None, "na", "No expert ratings yet.")
     subjective = table[table["bucket"] == "No expert consensus"]
     items = subjective[KEY + ["round1", "round2"]].merge(judge_table(df), on=KEY, how="left")
-    reading = (f"{len(items)} items have no expert consensus. The judge's answers there "
+    reading = (f"{len(items)} labels have no expert consensus. The judge's answers there "
                f"are shown, not scored.")
     return ModuleResult(
         name="subjective",
