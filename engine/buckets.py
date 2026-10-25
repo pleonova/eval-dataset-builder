@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from config import (BUCKETS, COST_PER_HOUR, EXTRA_PASSAGES, MINUTES_PER_LABEL, RERATE_EXPERTS, ROUND2_FLAG_SHARE,
+from config import (BUCKETS, CRITERIA, COST_PER_HOUR, EXTRA_PASSAGES, MINUTES_PER_LABEL, RERATE_EXPERTS, ROUND2_FLAG_SHARE,
                     TRUSTED_FAIR, TRUSTED_GOOD)
 from engine.consensus import majority
 from engine.load import is_expert
@@ -74,9 +74,17 @@ def buckets(df: pd.DataFrame) -> ModuleResult:
         status=bucket_status(shares["Trusted"]),
         reading=reading,
         details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table, "help": BUCKET_HELP,
-                 "label_help": ("A label is the experts' level for one item (a passage) on one criterion. Each item is "
-                                "rated on 3 criteria, so it has 3 labels.")},
+                 "label_help": label_help(table)},
     )
+
+
+def label_help(table: pd.DataFrame) -> str:
+    """Hover text for "labels": one concrete item, then the totals."""
+    names = [c.replace("_", " ") for c in CRITERIA if c in set(table["criterion"])]
+    listed = ", ".join(names[:-1]) + f", and {names[-1]}" if len(names) > 1 else names[0]
+    n_items = table["item_id"].nunique()
+    return (f"One label is the level experts gave one item on one criterion. Each item is rated on {listed}, "
+            f"so it gets {len(names)} labels. {n_items} items × {len(names)} criteria = {len(table)} labels.")
 
 
 def round2_flag(df: pd.DataFrame) -> ModuleResult:
