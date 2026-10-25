@@ -1,0 +1,1299 @@
+{
+  "seed": 42,
+  "levels": [
+    "slightly_complex",
+    "moderately_complex",
+    "very_complex",
+    "exceedingly_complex"
+  ],
+  "confusing_criterion": "vocabulary",
+  "items": {
+    "p_001": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_002": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_003": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_004": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_005": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_006": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_007": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_008": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_009": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_010": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": false
+      }
+    },
+    "p_011": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_012": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_013": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_014": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_015": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_016": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_017": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_018": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_019": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_020": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_021": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_022": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_023": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_024": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_025": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_026": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_027": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_028": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_029": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_030": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_031": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_032": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_033": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_034": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_035": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_036": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_037": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_038": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_039": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "slightly_complex",
+          "moderately_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_040": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_041": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_042": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_043": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_044": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_045": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_046": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_047": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_048": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_049": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_050": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_051": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "moderately_complex",
+          "very_complex"
+        ],
+        "round2": true
+      }
+    },
+    "p_052": {
+      "sentence_structure": {
+        "true_level": "exceedingly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_053": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_054": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_055": {
+      "sentence_structure": {
+        "true_level": null,
+        "subjective": true,
+        "split_levels": [
+          "very_complex",
+          "exceedingly_complex"
+        ],
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_056": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_057": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_058": {
+      "sentence_structure": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    },
+    "p_059": {
+      "sentence_structure": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      },
+      "background_knowledge": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      }
+    },
+    "p_060": {
+      "sentence_structure": {
+        "true_level": "very_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "vocabulary": {
+        "true_level": "moderately_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": false
+      },
+      "background_knowledge": {
+        "true_level": "slightly_complex",
+        "subjective": false,
+        "split_levels": null,
+        "round2": true
+      }
+    }
+  }
+}
