@@ -1,0 +1,55 @@
+{
+  "note": "Short sample passages for the AI dry run. Several are written to sit on the boundary between two adjacent levels.",
+  "items": [
+    {
+      "item_id": "pc_01",
+      "boundary": null,
+      "text": "Mia has a red kite. She takes it to the park on a windy day. The kite goes up high. It dips and turns in the sky. Her dog runs after its long tail. When the wind stops, the kite falls into the grass. Mia laughs and picks it up. They walk home for lunch."
+    },
+    {
+      "item_id": "pc_02",
+      "boundary": {"criterion": "vocabulary", "levels": ["moderately_complex", "very_complex"]},
+      "text": "A volcano forms where melted rock, called magma, pushes up through cracks in the Earth's crust. When magma reaches the surface, it is called lava. Some eruptions are gentle, and lava flows slowly downhill. Others are explosive, throwing ash and gas high into the atmosphere. Scientists who study volcanoes, called volcanologists, measure small earthquakes and changes in the ground to predict when an eruption might happen."
+    },
+    {
+      "item_id": "pc_03",
+      "boundary": {"criterion": "vocabulary", "levels": ["moderately_complex", "very_complex"]},
+      "text": "When many people want to buy the same product but stores have only a few, the price usually rises. Economists call this the relationship between supply and demand. A shortage can happen after a storm damages factories, or when a new toy suddenly becomes popular. Over time, companies often respond by producing more, which can bring the price back down. Some governments also set limits on prices for essential goods like bread or fuel."
+    },
+    {
+      "item_id": "pc_04",
+      "boundary": {"criterion": "vocabulary", "levels": ["moderately_complex", "very_complex"]},
+      "text": "Inside each cell, tiny structures called organelles carry out specific jobs. The nucleus stores genetic instructions, while mitochondria convert nutrients into usable energy. A flexible membrane surrounds the cell and regulates which substances enter or leave. Plant cells also contain chloroplasts, which capture sunlight for photosynthesis, and a rigid wall that provides structural support."
+    },
+    {
+      "item_id": "pc_05",
+      "boundary": {"criterion": "vocabulary", "levels": ["moderately_complex", "very_complex"]},
+      "text": "In the years after the war, the city's population grew rapidly as families migrated from rural areas in search of factory work. Housing was scarce, and many newcomers lived in crowded tenements with poor ventilation. Reformers documented these conditions and lobbied the council for stricter building codes. Their persistent advocacy eventually led to new regulations requiring windows, fire escapes, and indoor plumbing."
+    },
+    {
+      "item_id": "pc_06",
+      "boundary": {"criterion": "sentence_structure", "levels": ["moderately_complex", "very_complex"]},
+      "text": "The museum opened early on Saturday, so the class arrived before the crowds. Although the dinosaur hall was the most popular room, their teacher led them first to the gems, which glittered under bright lamps. After lunch they finally saw the skeletons. Some students sketched the bones, while others read the signs aloud to each other."
+    },
+    {
+      "item_id": "pc_07",
+      "boundary": null,
+      "text": "Epistemic humility, far from constituting a mere rhetorical concession, entails a substantive commitment to the provisionality of one's inferences, particularly where the evidentiary basis is circumscribed by methodological constraints that the investigator, having internalized them, may no longer perceive as contingent."
+    },
+    {
+      "item_id": "pc_08",
+      "boundary": null,
+      "text": "Bees visit flowers to collect nectar, which they turn into honey. As a bee moves from flower to flower, pollen sticks to its fuzzy body. Some of that pollen rubs off on the next flower, and this helps plants make seeds. Without bees, many fruits and vegetables would be harder to grow."
+    },
+    {
+      "item_id": "pc_09",
+      "boundary": {"criterion": "vocabulary", "levels": ["moderately_complex", "very_complex"]},
+      "text": "A password manager stores your login details in an encrypted vault, so you only need to remember one master password. When you visit a website, the program can automatically fill in your username and a unique, randomly generated password. Because each account has a different password, a data breach at one company does not compromise your other accounts. Many managers also alert you when a saved password appears in a known leak."
+    },
+    {
+      "item_id": "pc_10",
+      "boundary": {"criterion": "sentence_structure", "levels": ["very_complex", "exceedingly_complex"]},
+      "text": "The committee, having reviewed the proposal that the engineers had submitted only after months of revisions that the board itself had requested, concluded that the bridge, though sound in design, could not be built within the budget the city had approved unless the timeline, which already stretched across three fiscal years, were extended further."
+    }
+  ]
+}

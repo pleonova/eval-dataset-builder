@@ -1,0 +1,35 @@
+{
+  "name": "Text complexity",
+  "version": 1,
+  "note": "Draft rubric. Levels and criteria follow the Learning Commons text complexity evaluators; the wording is ours.",
+  "levels": ["slightly_complex", "moderately_complex", "very_complex", "exceedingly_complex"],
+  "criteria": {
+    "sentence_structure": {
+      "question": "How hard are the sentences to follow?",
+      "levels": {
+        "slightly_complex": "Mostly short, simple sentences with one idea each and few or no subordinate clauses.",
+        "moderately_complex": "A mix of simple and compound sentences; some sentences have one subordinate clause.",
+        "very_complex": "Many complex sentences, often with two or more clauses or a long phrase before the main verb.",
+        "exceedingly_complex": "Most sentences are long and layered, with several embedded clauses the reader must hold in mind."
+      }
+    },
+    "vocabulary": {
+      "question": "How demanding are the words?",
+      "levels": {
+        "slightly_complex": "Everyday words a young reader already knows; almost no academic or subject-specific terms.",
+        "moderately_complex": "Some words that may be unfamiliar or academic, but context explains most of them.",
+        "very_complex": "Fairly many words that may be unfamiliar or academic, and context helps with some of them.",
+        "exceedingly_complex": "Dense with rare, technical, or abstract words, mostly unexplained, that many readers will not know."
+      }
+    },
+    "background_knowledge": {
+      "question": "How much does the reader need to know already?",
+      "levels": {
+        "slightly_complex": "Everyday experiences; no outside knowledge needed.",
+        "moderately_complex": "Some common school knowledge, explained or easy to infer.",
+        "very_complex": "Subject knowledge the text assumes and does not explain.",
+        "exceedingly_complex": "Specialized or discipline-specific knowledge, with references the text never unpacks."
+      }
+    }
+  }
+}
