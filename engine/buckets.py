@@ -111,8 +111,10 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
     if result.value is None:
         return result
     counts = result.details["counts"]
-    flagged = round2_flag(df).details["flagged"]
+    flag = round2_flag(df)
+    flagged = flag.details["flagged"]
     trusted, rerate = counts["Trusted"], counts["Re-rate"]
+    also = ""
 
     if rerate:
         hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
@@ -121,6 +123,8 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         reading = (f"Experts split on these and nobody has rechecked them. "
                    f"Add {RERATE_EXPERTS} new experts on each.")
         status = "fair"
+        if flagged:
+            also = flag.reading
     elif flagged:
         name = flagged[0].replace("_", " ")
         action, cost = f"Clarify the {name} rubric", ""
@@ -139,7 +143,7 @@ def verdict(df: pd.DataFrame) -> ModuleResult:
         value=action,
         status=status,
         reading=reading,
-        details={"action": action, "cost": cost, "counts": counts, "total": sum(counts.values())},
+        details={"action": action, "cost": cost, "also": also, "counts": counts, "total": sum(counts.values())},
     )
 
 

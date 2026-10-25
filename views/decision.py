@@ -6,7 +6,7 @@ import streamlit as st
 
 from config import BUCKETS
 from engine.ai_checks import stand_in, subjective_items
-from engine.buckets import buckets, round2_flag, trusted_range, verdict
+from engine.buckets import buckets, trusted_range, verdict
 from engine.load import load_ratings
 from result import ModuleResult
 
@@ -18,6 +18,7 @@ BUCKET_LINES = {
     "No expert consensus": ("Split held with new experts", "Likely subjective in practice"),
 }
 FILTER_KEY = "decision_bucket"
+LABELS_OPEN_KEY = "decision_labels_open"
 
 
 def filter_css() -> str:
@@ -42,10 +43,12 @@ CSS = f"""
 .eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
 .eeb-verdict .action {{ font-size: 1.2rem; font-weight: 600; }}
 .eeb-verdict .reason {{ margin-top: 6px; }}
+.eeb-verdict .also {{ margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb;
+  font-size: 0.85rem; color: #6b7280; }}
 .eeb-head {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .eeb-head .title {{ font-weight: 600; }}
 .eeb-head .hint {{ font-size: 0.75rem; color: #6b7280; }}
-.eeb-tile {{ margin-bottom: 4px; }}
+.eeb-tile {{ margin-bottom: 14px; }}
 .eeb-tile .name {{ font-weight: 600; }}
 .eeb-tile .line {{ font-size: 0.8rem; color: #6b7280; line-height: 1.35; }}
 .eeb-dot {{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }}
@@ -76,7 +79,6 @@ def get_results() -> dict[str, ModuleResult]:
     return {
         "verdict": verdict(df),
         "buckets": buckets(df),
-        "round2": round2_flag(df),
         "range": trusted_range(df),
         "stand_in": stand_in(df),
         "subjective": subjective_items(df),
@@ -89,10 +91,11 @@ def dot(bucket: str) -> str:
 
 def verdict_card(result: ModuleResult) -> None:
     cost = f"<span>{result.details['cost']}</span>" if result.details.get("cost") else ""
+    also = f'<div class="also">Also: {result.details["also"]}</div>' if result.details.get("also") else ""
     st.markdown(f"""
 <div class="eeb-verdict">
   <div class="top"><span class="action">{result.details.get('action', result.reading)}</span>{cost}</div>
-  <div class="reason">{result.reading}</div>
+  <div class="reason">{result.reading}</div>{also}
 </div>""", unsafe_allow_html=True)
 
 
@@ -101,6 +104,7 @@ def pick_bucket_from_bar() -> None:
     points = st.session_state["decision_bar"].selection.get("pick", [])
     if points:
         st.session_state[FILTER_KEY] = points[0]["bucket"]
+        st.session_state[LABELS_OPEN_KEY] = True
 
 
 def bucket_bar(counts: dict) -> alt.Chart:
@@ -174,7 +178,7 @@ def spread(labels: str) -> str:
 
 def item_table(results: dict[str, ModuleResult]) -> None:
     st.session_state.setdefault(FILTER_KEY, "Re-rate")
-    choice = st.segmented_control("Show labels", BUCKETS, key=FILTER_KEY)
+    choice = st.segmented_control("Bucket", BUCKETS, key=FILTER_KEY, label_visibility="collapsed")
     if choice == "No expert consensus":
         items = results["subjective"].details["items"].copy()
         items["judge"] = items["judge"].str.replace("_", " ")
@@ -206,10 +210,7 @@ def render() -> None:
 
     verdict_card(results["verdict"])
     where_labels_stand(results["buckets"])
-    item_table(results)
+    with st.expander("Show labels", key=LABELS_OPEN_KEY, on_change="rerun"):
+        item_table(results)
     stand_in_card(results["stand_in"])
     certainty_card(results["range"])
-
-    flag = results["round2"]
-    if flag.details.get("flagged"):
-        st.info(flag.reading)
