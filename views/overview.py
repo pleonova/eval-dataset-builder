@@ -46,7 +46,19 @@ CSS = f"""
   color: {BLUE}; margin-bottom: 4px; }}
 .eeb-verdict .action {{ font-size: 1.2rem; font-weight: 600; }}
 .eeb-verdict .reason {{ margin-top: 6px; }}
-.eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; margin-top: 8px; }}
+.eeb-verdict .risk {{ font-size: 0.85rem; color: #6b7280; font-style: italic; margin-top: 8px; }}
+.eeb-tip {{ position: relative; border-bottom: 1px dotted #9ca3af; cursor: help; outline: none; }}
+.eeb-tip:hover, .eeb-tip:focus {{ border-bottom-color: {BLUE}; }}
+.eeb-tip .tip {{ display: none; position: absolute; top: calc(100% + 6px); left: -8px; width: 280px; z-index: 20;
+  background: #f9fafb; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 12px; font-size: 0.8rem;
+  font-weight: 400; line-height: 1.4; color: #111827; text-align: left; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-style: normal; cursor: default; white-space: normal; }}
+.eeb-tip.right .tip {{ left: auto; right: -8px; }}
+.eeb-tip, .eeb-tip .tip {{ text-transform: none; letter-spacing: 0; }}
+.eeb-tip .tip b {{ display: block; margin-bottom: 4px; }}
+.eeb-tip:hover .tip, .eeb-tip:focus .tip, .eeb-tip:focus-within .tip {{ display: block; }}
+.eeb-page-title {{ font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25;
+  margin: 0.25rem 0 1rem; }}
 .eeb-head {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .eeb-head .title {{ font-size: 1.1rem; font-weight: 600; }}
 .eeb-head .hint {{ font-size: 0.75rem; color: #6b7280; }}
@@ -104,13 +116,26 @@ def get_results() -> dict[str, ModuleResult]:
     }
 
 
+def help_term(term: str, label: str, text: str, align: str = "left") -> str:
+    """A dotted-underlined term that shows its help text on hover, and stays open after a click until you
+    click elsewhere. align="right" opens the text leftward, for terms near the right edge."""
+    return (f'<span class="eeb-tip {align}" tabindex="0">{term}'
+            f'<span class="tip"><b>{label}</b>{text}</span></span>')
+
+
 def dot(bucket: str) -> str:
     return f'<span class="eeb-dot" style="background:{BUCKET_COLORS[bucket]}"></span>'
 
 
 def verdict_card(result: ModuleResult) -> None:
-    cost = f"<span>{result.details['cost']}</span>" if result.details.get("cost") else ""
-    risk = f'<div class="risk">{result.details["risk"]}</div>' if result.details.get("risk") else ""
+    cost = result.details.get("cost", "")
+    if cost and result.details.get("cost_help"):
+        cost = help_term(cost, "How the cost is worked out", result.details["cost_help"], "right")
+    cost = f"<span>{cost}</span>" if cost else ""
+    label = "<b>Risk:</b>"
+    if result.details.get("risk_help"):
+        label = help_term(label, "Why this is a risk", result.details["risk_help"])
+    risk = f'<div class="risk">{label} {result.details["risk"]}</div>' if result.details.get("risk") else ""
     st.markdown(f"""
 <div class="eeb-verdict">
   <div class="eeb-kicker">What to do next</div>
@@ -161,10 +186,13 @@ def _labels_card(counts: dict, total: int, results: dict[str, ModuleResult]) -> 
     st.altair_chart(bucket_bar(counts), width="stretch", on_select=partial(pick_bucket_from_bar, chart_key),
                     selection_mode="pick", key=chart_key)
 
-    for col, bucket in zip(st.columns(3), BUCKETS):
+    rules = results["buckets"].details.get("help", {})
+    for i, (col, bucket) in enumerate(zip(st.columns(3), BUCKETS)):
         first, second = BUCKET_LINES[bucket]
+        name = help_term(bucket, bucket, rules[bucket], "right" if i == len(BUCKETS) - 1 else "left") \
+            if bucket in rules else bucket
         col.markdown(f"""
-<div class="eeb-tile"><div class="name">{dot(bucket)}{bucket} · {counts[bucket]}</div>
+<div class="eeb-tile"><div class="name">{dot(bucket)}{name} · {counts[bucket]}</div>
   <div class="line">{first}</div><div class="line">{second}</div></div>""", unsafe_allow_html=True)
 
     with st.expander("Show labels", key=LABELS_OPEN_KEY, on_change="rerun"):
@@ -220,11 +248,14 @@ def certainty_card(result: ModuleResult) -> None:
   <div class="point" style="left:{pos(share):.1f}%"></div></div>
   <span class="pm">{r['low']:.0%} to {r['high']:.0%}</span></div>""")
     warning = result.details.get("warning")
+    wide = "A wide bar"
+    if result.details.get("help"):
+        wide = help_term(wide, "What the range means", result.details["help"])
     reading = result.reading.replace(warning, f'<span class="warn">{warning}</span>') if warning else result.reading
     st.markdown(f"""
 <div class="eeb-card"><div class="eeb-kicker">How sure are we?</div>
 <div class="title">More ratings mean steadier, more trustworthy results</div>
-<div class="sub">A wide bar means the share of labels you can trust could still shift between checks.</div>
+<div class="sub">{wide} means the share of labels you can trust could still shift between checks.</div>
 {''.join(lines)}
 <div class="note">{reading}</div></div>""", unsafe_allow_html=True)
 
@@ -263,13 +294,15 @@ def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()
 
+    st.markdown('<div class="eeb-page-title">Can we tune the AI on these expert labels?</div>',
+                unsafe_allow_html=True)
     st.markdown('<div class="eeb-banner">AI is no better than the humans it is checked against. '
                 'First check if experts truly disagree or need more ratings.</div>',
                 unsafe_allow_html=True)
     verdict_card(results["verdict"])
     where_labels_stand(results)
-    rubric_card(results["round2"])
     certainty_card(results["range"])
+    rubric_card(results["round2"])
     stand_in_card(results["stand_in"])
     st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
                 unsafe_allow_html=True)

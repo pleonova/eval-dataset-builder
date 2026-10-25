@@ -73,7 +73,7 @@ def buckets(df: pd.DataFrame) -> ModuleResult:
         value=shares,
         status=bucket_status(shares["Trusted"]),
         reading=reading,
-        details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table},
+        details={"counts": counts.to_dict(), "by_criterion": by_criterion, "items": table, "help": BUCKET_HELP},
     )
 
 
@@ -123,6 +123,16 @@ def round2_flag(df: pd.DataFrame) -> ModuleResult:
     )
 
 
+BUCKET_HELP = {
+    "Trusted": (f"At least 3 of 4 experts gave the same level, or {RERATE_EXPERTS} new experts both sided "
+                f"with one side of a split."),
+    "Re-rate": (f"Experts split (no level got 3 of 4 votes) and nobody has rechecked it yet. "
+                f"Next step: {RERATE_EXPERTS} new experts rate it."),
+    "No expert consensus": (f"Experts split, and {RERATE_EXPERTS} new experts split the same way or picked a level "
+                            f"no first-round expert gave. Likely subjective, so it is shown but not scored."),
+}
+
+
 def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
     """One recommendation for the Overview page: go or no go on the labels to tune against.
 
@@ -139,22 +149,26 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
     hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
     rerate_cost = f"{hours:.1f} expert hours · ${hours * COST_PER_HOUR:,.0f}"
     no_consensus = counts["No expert consensus"]
-    risk = ""
+    risk = risk_help = ""
+    cost_help = (f"{rerate} labels × {RERATE_EXPERTS} new experts × {MINUTES_PER_LABEL} minutes each = "
+                 f"{hours:.1f} hours, at ${COST_PER_HOUR} per hour. Example rates.")
 
     if rerate:
         action = f"Re-rate {rerate} labels"
         cost = rerate_cost
         reading = (f"Experts split on these and nobody has rechecked them. "
                    f"Add {RERATE_EXPERTS} new experts on each.")
-        risk = ("Risk: Tuning only on the labels experts agree on, without addressing where they disagree, "
-                "could bias the AI toward easier passages and make it unreliable on harder ones.")
+        risk = ("Tuning now only on agreed labels could bias the AI toward easier passages "
+                "and make it unreliable on harder ones.")
+        risk_help = ("Experts disagree on the harder passages. Until we check whether they truly disagree "
+                     "or just need more ratings, those passages can't be used to tune or check the AI.")
         status = "fair"
     elif result.value["Trusted"] >= TRUSTED_GOOD:
         action, cost = f"Tune on the {trusted} Trusted labels", ""
         reading = ("Experts agree on these, and the AI matches them as well as experts match each other."
                    if ai is not None and ai.value else "Experts agree on these.")
         if no_consensus:
-            risk = (f"Risk: on the {no_consensus} No expert consensus labels there is no agreed answer, "
+            risk = (f"On the {no_consensus} No expert consensus labels there is no agreed answer, "
                     f"so the AI can't be checked there.")
         status = "good"
     elif flagged:
@@ -171,7 +185,7 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
         value=action,
         status=status,
         reading=reading,
-        details={"action": action, "cost": cost, "risk": risk, "counts": counts, "total": total},
+        details={"action": action, "cost": cost, "cost_help": cost_help if cost else "", "risk": risk, "risk_help": risk_help, "counts": counts, "total": total},
     )
 
 
@@ -206,5 +220,8 @@ def trusted_range(df: pd.DataFrame) -> ModuleResult:
         value=share,
         status="na",
         reading=reading,
-        details={"rows": rows, "share": share, "unsafe": unsafe, "warning": warning},
+        details={"rows": rows, "share": share, "unsafe": unsafe, "warning": warning,
+                 "help": ("A 95% range for the Trusted share across the whole dataset: the true share most likely "
+                          "falls inside it. It is worked out passage by passage, so it narrows as more passages "
+                          "are rated.")},
     )
