@@ -101,7 +101,6 @@ CSS = f"""
 .eeb-crit.flagged .name {{ font-weight: 600; }}
 .eeb-crit.flagged .fill {{ background: {RED}; }}
 .eeb-crit .count {{ color: #6b7280; white-space: nowrap; }}
-.eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
 """
@@ -318,5 +317,3 @@ def render() -> None:
     rubric_card(results["round2"])
     certainty_card(results["range"])
     stand_in_card(results["stand_in"])
-    st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
-                unsafe_allow_html=True)
