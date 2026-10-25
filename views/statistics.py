@@ -7,7 +7,7 @@ from config import ALPHA_FAIR, ALPHA_GOOD, CRITERIA, LEVELS
 from engine.statistics import alpha_by_criterion, level_confusion, rater_kappas
 from engine.load import load_ratings
 from result import ModuleResult
-from views import render_card
+from views import render_note
 from views.overview import BLUE
 
 SHORT = {level: level.split("_")[0] for level in LEVELS}
@@ -46,8 +46,8 @@ def get_result() -> ModuleResult:
         name="statistics",
         value=None,
         status="na",
-        reading=("Draft: these numbers have not been checked yet.\n\n"
-                 "Coming next: whether the AI leans toward the lower or higher level when experts split."),
+        reading=("**Draft:** these numbers have not been checked yet.\n\n"
+                 "**Coming next:** whether the AI leans toward the lower or higher level when experts split."),
     )
 
 
@@ -172,7 +172,7 @@ Gray band is the expert range; the dashed line is the AI ceiling ({result.detail
 
 
 def render() -> None:
-    render_card(get_result())
+    render_note(get_result())
     st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()
     alpha_card(results["alpha"])

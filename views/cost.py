@@ -1,5 +1,5 @@
 from result import ModuleResult
-from views import render_card
+from views import render_note
 
 
 def get_result() -> ModuleResult:
@@ -7,9 +7,9 @@ def get_result() -> ModuleResult:
         name="cost",
         value=None,
         status="na",
-        reading="Coming next: how many items you need for a target margin, and the expert hours and cost to get there.",
+        reading="**Coming next:** how many items you need for a target margin, and the expert hours and cost to get there.",
     )
 
 
 def render() -> None:
-    render_card(get_result())
+    render_note(get_result())
