@@ -748,6 +748,339 @@
       "criterion": "vocabulary",
       "label": "moderately_complex",
       "clause": "moderately_complex: Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_02",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_03",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_03",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_04",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_04",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_05",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_05",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_06",
+      "criterion": "vocabulary",
+      "label": "slightly_complex",
+      "clause": "Everyday words a young reader already knows; almost no academic or subject-specific terms."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_06",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_07",
+      "criterion": "vocabulary",
+      "label": "exceedingly_complex",
+      "clause": "Dense with rare, technical, or abstract words, mostly unexplained, that many readers will not know."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_07",
+      "criterion": "sentence_structure",
+      "label": "exceedingly_complex",
+      "clause": "exceedingly_complex: Most sentences are long and layered, with several embedded clauses the reader must hold in mind."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_08",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_08",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_09",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_09",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_10",
+      "criterion": "vocabulary",
+      "label": "very_complex",
+      "clause": "Fairly many words that may be unfamiliar or academic, and context helps with some of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 2,
+      "item_id": "pc_10",
+      "criterion": "sentence_structure",
+      "label": "exceedingly_complex",
+      "clause": "Most sentences are long and layered, with several embedded clauses the reader must hold in mind."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_01",
+      "criterion": "vocabulary",
+      "label": "slightly_complex",
+      "clause": "Everyday words a young reader already knows; almost no academic or subject-specific terms."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_01",
+      "criterion": "sentence_structure",
+      "label": "slightly_complex",
+      "clause": "Mostly short, simple sentences with one idea each and few or no subordinate clauses."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_02",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_02",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_03",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_03",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_04",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_04",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_05",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_05",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_06",
+      "criterion": "vocabulary",
+      "label": "moderately_complex",
+      "clause": "moderately_complex: Some words that may be unfamiliar or academic, but context explains most of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_06",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_07",
+      "criterion": "vocabulary",
+      "label": "exceedingly_complex",
+      "clause": "exceedingly_complex: Dense with rare, technical, or abstract words, mostly unexplained, that many readers will not know."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_07",
+      "criterion": "sentence_structure",
+      "label": "exceedingly_complex",
+      "clause": "exceedingly_complex: Most sentences are long and layered, with several embedded clauses the reader must hold in mind."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_08",
+      "criterion": "vocabulary",
+      "label": "slightly_complex",
+      "clause": "Everyday words a young reader already knows; almost no academic or subject-specific terms."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_08",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_09",
+      "criterion": "vocabulary",
+      "label": "slightly_complex",
+      "clause": "Everyday words a young reader already knows; almost no academic or subject-specific terms."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_09",
+      "criterion": "sentence_structure",
+      "label": "moderately_complex",
+      "clause": "A mix of simple and compound sentences; some sentences have one subordinate clause."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_10",
+      "criterion": "vocabulary",
+      "label": "very_complex",
+      "clause": "very_complex: Fairly many words that may be unfamiliar or academic, and context helps with some of them."
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "provider": "Alibaba",
+      "run": 3,
+      "item_id": "pc_10",
+      "criterion": "sentence_structure",
+      "label": "exceedingly_complex",
+      "clause": "Most sentences are long and layered, with several embedded clauses the reader must hold in mind."
     }
   ]
 }

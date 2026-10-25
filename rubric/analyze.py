@@ -20,10 +20,6 @@ def load_dry_run(path: Path | str = DRY_RUN_PATH) -> pd.DataFrame:
     return pd.DataFrame(ratings, columns=["model", "provider", "run", "item_id", "criterion", "label", "clause"])
 
 
-def level_name(level: str) -> str:
-    return level.replace("_", " ").capitalize()
-
-
 def flip_rate(runs: pd.DataFrame) -> tuple[int, int]:
     """Passages where at least one model's runs disagree, out of all passages."""
     flipped = runs.groupby(["item_id", "model"])["label"].nunique().gt(1).groupby("item_id").any()
@@ -63,7 +59,7 @@ def check_rule(criterion: str, runs: pd.DataFrame) -> dict:
     elif clear:
         showed = f"Mostly agreed; {changed}" if flipped else "Mostly agreed, and gave the same answer every run"
     else:
-        between = f"{level_name(pair[0])} and {pair[1].replace('_', ' ')}"
+        between = f"{pair[0].replace('_', ' ')} and {pair[1].replace('_', ' ')}"
         split = alpha < ALPHA_FAIR
         showed = (f"Split between {between}" + (f", and {changed}" if flipped else "") if split
                   else f"{changed.capitalize()}, mostly between {between}")
