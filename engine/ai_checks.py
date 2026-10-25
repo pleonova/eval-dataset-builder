@@ -133,7 +133,8 @@ def self_consistency(df: pd.DataFrame) -> ModuleResult:
         name="self_consistency",
         value=share,
         status=self_consistency_status(share),
-        reading=f"It gives the same answer on all 3 runs for {share:.0%} of labels.",
+        reading=(f"The AI gives the same answer on all 3 runs for {int(table['consistent'].sum())} "
+                 f"of {len(table)} labels ({share:.0%})."),
         details={"by_criterion": by_criterion, "flips": table[~table["consistent"]]},
     )
 
@@ -165,8 +166,8 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
     matches = expert_matches(df)
     low, high = min(matches.values()), max(matches.values())
     expert_range = f"{low:.0%}" if round(low, 2) == round(high, 2) else f"{low:.0%} to {high:.0%}"
-    trusted_line = (f"It matches the expert answer on {exact / n:.0%}. "
-                    f"Experts match each other on {expert_range}.")
+    trusted_line = (f"The AI matches the expert answer on {exact} of {n} labels ({exact / n:.0%}). "
+                    f"Experts match each other on {expert_range} of them.")
 
     subjective = subjective_items(df).details.get("items", pd.DataFrame())
     split_line = None
@@ -176,12 +177,11 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
             picks = "the AI picks one of the levels they gave, as another expert would."
         else:
             picks = f"the AI picks one of the levels they gave on {inside} of {len(subjective)}."
-        split_line = f"Not scored. Experts split, and {picks}"
+        split_line = f"Not scored. Experts split on these {len(subjective)} labels, and {picks}"
 
-    lines = [{"bucket": "Trusted", "label": f"Trusted ({n})", "text": trusted_line}]
+    lines = [{"bucket": "Trusted", "label": "Trusted", "text": trusted_line}]
     if split_line:
-        lines.append({"bucket": "No expert consensus", "label": f"No expert consensus ({len(subjective)})",
-                      "text": split_line})
+        lines.append({"bucket": "No expert consensus", "label": "No expert consensus", "text": split_line})
     consistency = self_consistency(df)
     return ModuleResult(
         name="stand_in",
