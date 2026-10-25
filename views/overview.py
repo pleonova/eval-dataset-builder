@@ -37,6 +37,8 @@ def filter_css() -> str:
 
 CSS = f"""
 <style>
+.eeb-banner {{ background: {BLUE}14; border-left: 3px solid {BLUE}; border-radius: 6px; padding: 10px 14px;
+  font-size: 0.9rem; margin-bottom: 1.25rem; }}
 .eeb-verdict {{ border: 2px solid {BLUE}; border-radius: 8px; padding: 14px 16px; margin-bottom: 1.5rem; }}
 .eeb-verdict .top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }}
 .eeb-kicker {{ font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
@@ -246,6 +248,9 @@ def render() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()
 
+    st.markdown('<div class="eeb-banner">AI is no better than the humans it is checked against. '
+                'First check if experts truly disagree or need more ratings.</div>',
+                unsafe_allow_html=True)
     verdict_card(results["verdict"])
     where_labels_stand(results)
     stand_in_card(results["stand_in"])
