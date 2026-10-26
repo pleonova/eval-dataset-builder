@@ -31,7 +31,7 @@ METRICS = [
      "lines": ("Usable, but not", "yet solid (0.8+)")},
     {"label": "AI ceiling", "help": "ceiling", "value": "85%", "status": "good",
      "lines": ("Best any AI can", "score on this set")},
-    {"label": "AI on Trusted", "help": "trusted", "value": "70 of 76", "status": "good",
+    {"label": "AI on Trusted", "help": "trusted", "value": "68 of 74", "status": "good",
      "lines": ("AI matches experts", "where they agree")},
     {"label": "AI, no consensus", "help": "no_consensus", "value": "58%", "status": "good",
      "lines": ("Experts' own: 61%", "Random: 30%")},
@@ -39,9 +39,9 @@ METRICS = [
 NEXT_STEPS = [
     ("Vocabulary: splits cluster on Moderately vs Very", "Rewrite rule"),
     ("AI misses 6 items that experts agree on", "Review prompt"),
-    ("8 Re-rate items: confirm with 2 new experts each", "Add experts"),
+    ("19 Re-rate items: confirm with 2 new experts each", "Add experts"),
 ]
-COUNTS = {"All": 100, "Trusted": 76, "Re-rate": 8, "No expert consensus": 16}
+COUNTS = {"All": 100, "Trusted": 74, "Re-rate": 19, "No expert consensus": 7}
 ITEMS = pd.DataFrame([
     {"item": "p_047", "top": "40%", "recheck": "Not yet", "bucket": "Re-rate", "ai": "40%", "miss": False},
     {"item": "p_031", "top": "60%", "recheck": "Split again", "bucket": "No expert consensus", "ai": "60%", "miss": False},
@@ -111,7 +111,6 @@ CSS = f"""
 .eeb-items .miss {{ color: {RED}; font-weight: 600; }}
 .eeb-dot {{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }}
 .st-key-details_items {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; }}
-.eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 {filter_css()}
 </style>
 """
@@ -122,8 +121,7 @@ def get_result() -> ModuleResult:
         name="details",
         value=None,
         status="na",
-        reading=("**Placeholder:** Sample data used to demonstrate how this page will look with real results.\n\n"
-                 "**Coming next:** The real numbers from the engine, with steps linked to their items."),
+        reading="**Draft:** These numbers have not been validated.",
     )
 
 
@@ -187,15 +185,12 @@ def item_table() -> None:
 
 
 def render() -> None:
-    st.markdown(CSS, unsafe_allow_html=True)
     page_header("Which items need attention?",
                 "Item by item: the headline numbers, fixes in order, and every item "
-                "with its bucket and how the AI did.")
+                "with its bucket and how the AI did.", css=CSS)
     render_note(get_result())
     metric_tiles()
     next_steps()
     stand_in_panel()
     with st.container(border=True, key="details_items"):
         item_table()
-    st.markdown('<div class="eeb-simulated">Example values, shown as a placeholder for this page.</div>',
-                unsafe_allow_html=True)

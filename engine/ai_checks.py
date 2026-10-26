@@ -158,20 +158,18 @@ def subjective_items(df: pd.DataFrame) -> ModuleResult:
 
 
 def before_ai(df: pd.DataFrame) -> list[str]:
-    """What to improve before the AI rates new passages, worst first."""
+    """What to improve before the AI rates new passages, in the same order as the Overview's next steps."""
     steps = []
-    trusted = trusted_range(df)
-    if trusted.value is not None and trusted.details["unsafe"]:
-        low = trusted.details["rows"][0]["low"]
-        steps.append(f"Raise confidence in the labels: across the whole dataset, the Trusted share could be as low "
-                     f"as {low:.0%}, so up to about 1 in {round(1 / trusted.details['unsafe'])} labels might not be correct. "
-                     f"Rate more items to narrow it.")
     for name in round2_flag(df).details.get("flagged", []):
         name = name.replace("_", " ")
         steps.append(f"Clarify the {name} rubric, then recheck the AI on {name}.")
     rerate = buckets(df).details.get("counts", {}).get("Re-rate", 0)
     if rerate:
         steps.append(f"Settle the {rerate} Re-rate labels with experts, so the AI has more to be checked against.")
+    trusted = trusted_range(df)
+    if trusted.value is not None and trusted.details["unsafe"]:
+        low = trusted.details["rows"][0]["low"]
+        steps.append(f"Rate more items: the Trusted share could be as low as {low:.0%} today.")
     return steps
 
 
@@ -197,7 +195,12 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
             picks = f"the AI picks one of the levels they gave on {inside} of {len(subjective)}."
         split_line = f"Not scored. Experts split on these {len(subjective)} labels, and {picks}"
 
+    rerate = buckets(df).details.get("counts", {}).get("Re-rate", 0)
     lines = [{"bucket": "Trusted", "label": "Trusted", "text": trusted_line}]
+    if rerate:
+        lines.append({"bucket": "Re-rate", "label": "Re-rate",
+                      "text": f"Not checked yet. Experts haven't settled these {rerate} labels, "
+                              f"so there is no answer to compare the AI with."})
     if split_line:
         lines.append({"bucket": "No expert consensus", "label": "No expert consensus", "text": split_line})
     consistency = self_consistency(df)
@@ -214,6 +217,7 @@ def stand_in(df: pd.DataFrame) -> ModuleResult:
             "headline": ("Early read: the AI rates as well as an expert" if judge.status == "good"
                          else "Early read: the AI misses more often than experts do"),
             "before": before_ai(df),
-            "sub": "The AI rated the same labels as the experts, 3 times each. Its answers are compared with theirs.",
+            "sub": (f"The AI rated the same labels as the experts, 3 times each. So far it can only be checked "
+                    f"on the {n} labels experts agree on."),
         },
     )

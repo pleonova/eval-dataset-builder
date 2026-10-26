@@ -22,7 +22,7 @@ CONFUSING_CRITERION = "vocabulary"
 CONFUSED_LEVELS = (2, 3)            # moderately_complex <-> very_complex
 CONFUSED_ACCURACY = 0.50            # on the confusing criterion, for those two levels
 SUBJECTIVE_SHARE = 0.15
-ROUND2_SKIP_SHARE = 0.10            # split items left without round 2 (Re-rate)
+ROUND2_SKIP_SHARE = 0.50            # split items still waiting for round 2 (Re-rate)
 JUDGE_ACCURACY = 0.85
 JUDGE_FLIP = 0.08                   # chance a single judge run drifts one level
 
@@ -101,7 +101,7 @@ def main() -> None:
             if is_split([int(x) for x in labels]):
                 split_pairs.append((item_id, criterion, subjective, true, split, set(labels)))
 
-    # Round 2: most split items get 2 new experts; a few stay Re-rate
+    # Round 2: some split items get 2 new experts; the rest still wait in Re-rate
     n_skip = max(3, round(ROUND2_SKIP_SHARE * len(split_pairs)))
     skip = set(rng.choice(len(split_pairs), size=n_skip, replace=False).tolist())
     # Round 2 siding with the truth only resolves the split if the truth is one side of it

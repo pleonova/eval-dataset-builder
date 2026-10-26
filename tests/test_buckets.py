@@ -53,15 +53,17 @@ def test_no_consensus_is_the_planted_subjective_slice(table):
 
 def test_rerate_items_have_no_round2(table):
     rerate = table[table["bucket"] == "Re-rate"]
-    assert 1 <= len(rerate) <= 15
+    # Most round-1 splits are still waiting for round 2, so Re-rate is a large slice
+    assert 25 <= len(rerate) <= 55
     assert not rerate.apply(lambda r: planted(r, "round2"), axis=1).any()
 
 
 def test_shares_near_planted_truth(ratings):
     shares = buckets(ratings).value
-    subjective = sum(t["subjective"] for item in TRUTH.values() for t in item.values()) / 180
+    # Subjective items only show as No expert consensus once round 2 splits too; the rest wait in Re-rate
+    subjective = sum(t["subjective"] and t["round2"] for item in TRUTH.values() for t in item.values()) / 180
     assert abs(shares["No expert consensus"] - subjective) <= 0.05
-    assert 0.75 <= shares["Trusted"] <= 0.90
+    assert 0.60 <= shares["Trusted"] <= 0.80
 
 
 def test_trusted_labels_mostly_match_truth(table):
