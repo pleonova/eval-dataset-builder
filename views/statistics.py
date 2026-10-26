@@ -38,7 +38,6 @@ CSS = f"""
 .eeb-strip.focus .name, .eeb-strip.focus .num.main {{ font-weight: 600; }}
 .eeb-strip.focus .span, .eeb-strip.focus .point {{ background: {BLUE}; }}
 .st-key-statistics_confusion {{ border: 1px dashed #9ca3af; border-radius: 8px; padding: 14px 16px; }}
-.eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
 </style>
 """
 
@@ -48,8 +47,7 @@ def get_result() -> ModuleResult:
         name="statistics",
         value=None,
         status="na",
-        reading=("**Draft:** These numbers have not been checked yet.\n\n"
-                 "**Coming next:** Whether the AI leans toward the lower or higher level when experts split."),
+        reading="**Draft:** These numbers have not been validated.",
     )
 
 
@@ -176,12 +174,9 @@ Gray band is the expert range; the dashed line is the AI ceiling ({result.detail
 def render() -> None:
     page_header("Where do experts disagree?",
                 "The numbers behind the Overview: how much experts agree, which levels they mix up, "
-                "and how the AI compares to each expert.")
+                "and how the AI compares to each expert.", css=CSS)
     render_note(get_result())
-    st.markdown(CSS, unsafe_allow_html=True)
     results = get_results()
     alpha_card(results["alpha"])
     confusion_card(results["confusion"])
     kappa_card(results["kappas"])
-    st.markdown('<div class="eeb-simulated">Ratings are simulated, with planted patterns.</div>',
-                unsafe_allow_html=True)

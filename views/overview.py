@@ -10,7 +10,7 @@ from engine.ai_checks import stand_in, subjective_items
 from engine.buckets import buckets, round2_flag, trusted_range, verdict
 from engine.load import load_ratings
 from result import ModuleResult
-from views import RED
+from views import RED, page_header
 
 BLUE = "#2563eb"
 BUCKET_COLORS = {"Trusted": "#4caf50", "Re-rate": RED, "No expert consensus": "#eab308"}
@@ -63,9 +63,6 @@ CSS = f"""
 .eeb-tip, .eeb-tip .tip {{ text-transform: none; letter-spacing: 0; }}
 .eeb-tip .tip b {{ display: block; margin-bottom: 4px; }}
 .eeb-tip:hover .tip, .eeb-tip:focus .tip, .eeb-tip:focus-within .tip {{ display: block; }}
-.eeb-page-title {{ font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25;
-  margin: 0.25rem 0 0.35rem; }}
-.eeb-tagline {{ font-size: 1rem; color: #6b7280; line-height: 1.45; margin-bottom: 1.25rem; }}
 .eeb-head {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .eeb-head .title {{ font-size: 1.1rem; font-weight: 600; }}
 .eeb-head .hint {{ font-size: 0.75rem; color: #6b7280; }}
@@ -305,13 +302,11 @@ def item_table(results: dict[str, ModuleResult]) -> None:
 
 
 def render() -> None:
-    st.markdown(CSS, unsafe_allow_html=True)
+    page_header("Can we tune the AI on these expert labels?",
+                "AI is no better than the humans it is checked against. "
+                "First check if experts truly disagree or need more ratings.", css=CSS)
     results = get_results()
 
-    st.markdown('<div class="eeb-page-title">Can we tune the AI on these expert labels?</div>'
-                '<div class="eeb-tagline">AI is no better than the humans it is checked against. '
-                'First check if experts truly disagree or need more ratings.</div>',
-                unsafe_allow_html=True)
     verdict_card(results["verdict"])
     where_labels_stand(results)
     rubric_card(results["round2"])
