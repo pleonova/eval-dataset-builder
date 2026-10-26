@@ -165,6 +165,7 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
     if flagged:
         name = flagged[0].replace("_", " ")
         is_trusted = table["bucket"] == "Trusted"
+        is_rerate = table["bucket"] == "Re-rate"
         in_flagged = table["criterion"].isin(flagged)
         steps.append({
             "action": "Clarify the rubric",
@@ -173,10 +174,13 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
             "reading": (f"{name.capitalize()} criterion: test new wording in the Rubric tab, "
                         f"then spot-check its Trusted labels."),
             "term": "spot-check its Trusted labels",
-            "term_help": (f"Only {name} labels are affected: the other criteria ({int((is_trusted & ~in_flagged).sum())} "
-                          f"Trusted labels) keep their wording. If the fix only sharpens the wording, the "
-                          f"{int((is_trusted & in_flagged).sum())} {name} Trusted labels most likely still hold, and the "
-                          f"spot-check confirms it. If it changes what a level means, {name} needs re-rating."),
+            "term_help": (f"Only the {int(in_flagged.sum())} {name} labels are affected. The "
+                          f"{int((is_trusted & ~in_flagged).sum())} Trusted labels on the other criteria stay as they are. "
+                          f"Of the {int(in_flagged.sum())}: the {int((is_trusted & in_flagged).sum())} Trusted ones most "
+                          f"likely still hold if the fix only sharpens the wording, and the spot-check confirms it. "
+                          + (f"The {int((is_rerate & in_flagged).sum())} waiting for a re-rate get it under the new "
+                             f"wording. " if (is_rerate & in_flagged).any() else "")
+                          + f"If the fix changes what a level means, all {int(in_flagged.sum())} need re-rating."),
         })
     if rerate:
         hours = rerate * RERATE_EXPERTS * MINUTES_PER_LABEL / 60
@@ -191,12 +195,12 @@ def verdict(df: pd.DataFrame, ai: ModuleResult | None = None) -> ModuleResult:
 
     risk = risk_help = ""
     if steps:
-        causes = ("truly disagree, need more ratings, or read an unclear rubric differently" if flagged
-                  else "truly disagree or just need more ratings")
         risk = ("Tuning now only on agreed labels could bias the AI toward easier items "
                 "and make it unreliable on harder ones.")
-        risk_help = (f"Experts disagree on the harder labels. Until we check whether they {causes}, "
-                     f"those labels can't be used to tune or check the AI.")
+        risk_help = (f"Experts split on {total - trusted} of {total} labels. Splits happen most on close calls, "
+                     f"where an item sits between two levels. Tune on only the other {trusted} and the AI learns "
+                     f"the clear-cut cases but none of the close ones, so it is least reliable where the call is "
+                     f"hardest. The steps above turn more of these into labels it can learn from.")
         status = "fair"
     elif result.value["Trusted"] >= TRUSTED_GOOD:
         steps.append({
