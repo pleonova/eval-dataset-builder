@@ -9,7 +9,7 @@ A Streamlit app that checks expert ratings before you use them to tune or score 
 
 The idea: an AI judge is no better than the humans it is checked against. Before tuning, find out whether experts truly disagree, read the rubric differently, or just need more ratings.
 
-> **All ratings and findings are simulated.** Only the four levels and three criteria names follow the [Learning Commons text complexity evaluators](https://github.com/learning-commons-org/evaluators). The ratings, the rubric wording, and every pattern the app finds (including "the vocabulary rule is unclear") were made up for this demo.
+> **A note about the Demo Data:** All ratings and findings are simulated. Only the four levels and three criteria names follow the [Learning Commons text complexity evaluators](https://github.com/learning-commons-org/evaluators). The ratings, the rubric wording, and every pattern the app finds (including "the vocabulary rule is unclear") were made up for this demo.
 
 ## Run it
 
@@ -53,7 +53,7 @@ The simulation plants patterns so the engine has a known answer to find, checked
 - About 15% of items are truly subjective and split 2-2 between neighboring levels.
 - About half the split labels are left without a round 2, so Re-rate is a real slice and the next steps are worth taking. Subjective labels without a round 2 sit in Re-rate too, since it isn't known yet that experts will keep splitting.
 
-Why simulated: the public Learning Commons Text Complexity dataset holds one consolidated score per passage, not each expert's rating. The agreement checks here need per-expert labels, so the app can't be run on that dataset as-is.
+*Why simulated: the public Learning Commons Text Complexity dataset holds one consolidated score per passage, not each expert's rating. The agreement checks here need per-expert labels, so the app can't be run on that dataset as-is.*
 
 ## How labels are sorted
 

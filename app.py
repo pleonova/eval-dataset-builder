@@ -7,12 +7,15 @@ st.markdown("""
 <style>
 [data-testid="stMainBlockContainer"] { padding-top: 3.5rem; }
 .eeb-brand { display: flex; align-items: center; gap: 8px; }
-.eeb-brand .mark { width: 28px; height: 28px; border-radius: 7px; background: #2563eb;
+.eeb-brand .mark { width: 22px; height: 22px; border-radius: 6px; background: #2563eb;
   display: flex; align-items: center; justify-content: center; }
-.eeb-brand .name { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; }
-.eeb-brand .gh { color: #9ca3af; display: flex; margin-left: 2px; }
-.eeb-brand .gh:hover { color: #2563eb; }
-.eeb-demo { font-size: 0.8rem; color: #6b7280; font-style: italic; margin: -0.25rem 0 0.5rem; }
+.eeb-brand .name { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
+/* Set apart from the data buttons, since it links to the code */
+/* !important: Streamlit colors every markdown link with the theme blue */
+.eeb-gh { color: #9ca3af !important; display: flex; margin-left: 12px; }
+.eeb-gh:hover { color: #2563eb !important; }
+.eeb-demo { font-size: 0.8rem; color: #6b7280; font-style: italic; max-width: 280px; }
+[data-testid="stMarkdownContainer"]:has(.eeb-demo) { margin-bottom: 0; }
 .eeb-demo b { font-style: normal; font-weight: 600; display: block; }
 .eeb-demo a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .eeb-demo a:hover { color: #2563eb; }
@@ -27,28 +30,31 @@ st.markdown("""
 header = st.container(horizontal=True, vertical_alignment="center", key="eeb_header")
 header.markdown("""
 <div class="eeb-brand">
-  <div class="mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white"
+  <div class="mark"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white"
     stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5L20 7"/></svg></div>
   <div class="name">Expert Eval Builder</div>
-  <a class="gh" href="https://github.com/pleonova/eval-dataset-builder" target="_blank" title="View on GitHub">
-    <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54
-    2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-    -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89
-    -3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09
-    2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25
-    .54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
 </div>""", unsafe_allow_html=True, width="content")
 # Example data is the only source for now, so it always shows as selected
 with header:
     st.space("stretch")
     if st.button("Upload Data", icon=":material/upload:", key="data_upload", help="Feature coming soon"):
         st.toast("Uploading your own data is coming soon.")
-    st.button("Demo Data", type="primary", icon=":material/check:", key="data_sample")
-LC_REPO = "https://github.com/learning-commons-org/evaluators"
-st.markdown(f'<div class="eeb-demo"><b>Synthetic Demo Data</b>Complexity levels and criteria from Learning Commons '
-            f'(<a href="{LC_REPO}" target="_blank">evaluators</a>, '
-            f'<a href="{LC_REPO}/tree/main/datasets" target="_blank">data</a>)</div>',
-            unsafe_allow_html=True)
+    # Clicking the data source explains it, so the header stays free of extra text
+    LC_REPO = "https://github.com/learning-commons-org/evaluators"
+    with st.popover("Demo Data", type="primary", icon=":material/check:", key="data_sample"):
+        st.markdown(f'<div class="eeb-demo"><b>Synthetic Demo Data</b>Ratings, rubric wording, and findings are '
+                    f'made up for this demo. Levels and criteria follow the Learning Commons text complexity '
+                    f'<a href="{LC_REPO}" target="_blank">evaluators</a> and '
+                    f'<a href="{LC_REPO}/tree/main/datasets" target="_blank">data</a>.</div>',
+                    unsafe_allow_html=True)
+    st.markdown("""
+<a class="eeb-gh" href="https://github.com/pleonova/eval-dataset-builder" target="_blank" title="View on GitHub">
+  <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54
+  2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+  -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89
+  -3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09
+  2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25
+  .54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>""", unsafe_allow_html=True, width="content")
 
 tab_overview, tab_rubric, tab_statistics, tab_details, tab_cost = st.tabs(
     ["Overview", "Rubric", "Statistics", "Details", "Cost"]
