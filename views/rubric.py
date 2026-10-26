@@ -42,7 +42,7 @@ CSS = f"""
 .eeb-help {{ display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px;
   margin-left: 4px; border-radius: 50%; border: 1px solid #9ca3af; color: #6b7280; font-size: 0.65rem;
   font-weight: 600; cursor: help; vertical-align: 1px; }}
-.eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: 1.5rem; }}
+.eeb-simulated {{ font-size: 0.8rem; color: #6b7280; font-style: italic; margin-bottom: 0.25rem; }}
 </style>
 """
 
@@ -96,7 +96,10 @@ def rules_table(result: ModuleResult) -> None:
 
 def ai_answers(result: ModuleResult) -> None:
     ratings = result.details["ratings"]
+    models = " and ".join(MODEL_NAMES.get(m, m) for m in result.details["models"])
     with st.expander("Show AI answers"):
+        st.markdown(f'<div class="eeb-simulated">{models}, {result.details["runs"]} runs each, '
+                    f'on {result.details["items"]} sample passages.</div>', unsafe_allow_html=True)
         criterion = st.segmented_control(
             "Rule", [r["criterion"] for r in result.details["rules"]], key="rubric_rule",
             format_func=lambda c: c.replace("_", " ").capitalize(), label_visibility="collapsed",
@@ -130,7 +133,3 @@ def render() -> None:
     if not ready:
         note.caption("Unlocks when all rules are clear.")
     ai_answers(result)
-
-    models = " and ".join(MODEL_NAMES.get(m, m) for m in result.details["models"])
-    st.markdown(f'<div class="eeb-simulated">{models}, {result.details["runs"]} runs each, '
-                f'on {result.details["items"]} sample passages.</div>', unsafe_allow_html=True)
